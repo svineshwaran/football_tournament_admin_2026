@@ -1,6 +1,7 @@
 import { Component, Input, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { API_URL } from '../../../core/config/app.config';
 
 @Component({
     selector: 'app-tournament-general',
@@ -37,6 +38,6 @@ export class TournamentGeneralComponent {
     getImageUrl(path?: string): string {
         if (!path) return '';
         if (path.startsWith('http') || path.startsWith('data:')) return path;
-        return `http://localhost:3000${path.startsWith('/') ? '' : '/'}${path}`;
+        return `${API_URL}${path.startsWith('/') ? '' : '/'}${path}`;
     }
 }

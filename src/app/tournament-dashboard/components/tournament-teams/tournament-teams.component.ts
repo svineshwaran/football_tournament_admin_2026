@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, Input, OnChanges, SimpleChanges } fr
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { API_URL } from '../../../core/config/app.config';
 
 interface Team {
     id: string;
@@ -63,10 +64,10 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         this.isLoading.set(true);
 
         // Fetch all teams
-        this.http.get<Team[]>('http://localhost:3000/api/teams').subscribe({
+        this.http.get<Team[]>(`${API_URL}/api/teams`).subscribe({
             next: (allTeams) => {
                 // Fetch tournament registrations
-                this.http.get<{ success: boolean, data: TournamentTeam[] }>(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams`).subscribe({
+                this.http.get<{ success: boolean, data: TournamentTeam[] }>(`${API_URL}/api/tournaments/${this.tournamentId}/teams`).subscribe({
                     next: (res) => {
                         const mappedTeams = res.data || [];
                         this.teams.set(mappedTeams);
@@ -137,7 +138,7 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
             if (!teamData.name || !teamData.teamType) return;
 
             this.isSaving.set(true);
-            this.http.post<Team>('http://localhost:3000/api/teams', teamData).subscribe({
+            this.http.post<Team>(`${API_URL}/api/teams`, teamData).subscribe({
                 next: (newTeam) => {
                     // Step 2: Now map it to the tournament
                     this.http.post<{ success: boolean, data: TournamentTeam }>(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams/${newTeam.id}`, {})
@@ -205,6 +206,6 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         if (!path) return '';
         if (path.startsWith('http')) return path;
         // Prefix with backend URL since Angular runs on 4200
-        return `http://localhost:3000${path.startsWith('/') ? '' : '/'}${path}`;
+        return `${API_URL}${path.startsWith('/') ? '' : '/'}${path}`;
     }
 }

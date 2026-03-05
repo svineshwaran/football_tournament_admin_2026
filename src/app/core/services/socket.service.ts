@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
+import { API_URL } from '../config/app.config';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ export class SocketService {
     public isConnected = signal<boolean>(false);
 
     constructor() {
-        this.socket = io('http://localhost:3000', {
+        this.socket = io(API_URL, {
             autoConnect: true,
             reconnection: true
         });
