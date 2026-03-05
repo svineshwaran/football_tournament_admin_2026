@@ -2,10 +2,12 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
+import { API_URL } from '../core/config/app.config';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-    baseUrl = 'http://localhost:3000/auth';
+    baseUrl = `${API_URL}/auth`;
     private userSignal = signal<any | null>(JSON.parse(localStorage.getItem('user') || 'null'));
 
     constructor(private http: HttpClient, private router: Router) { }
@@ -57,7 +59,12 @@ export class AuthService {
 
     hasPermission(permission: string): boolean {
         const user = this.user;
-        if (!user || !user.permissions) return false;
+        if (!user) return false;
+
+        // Role ID 1 is Admin, has all permissions
+        if (user.roleId === 1) return true;
+
+        if (!user.permissions) return false;
         const access = user.permissions.module_access || {};
         return !!access[permission];
     }
