@@ -261,7 +261,7 @@
 
                 <!-- Actions -->
                 <div class="flex lg:flex-col gap-3 justify-center lg:w-48 relative z-10">
-                    <button
+                    <button (click)="viewMatchCenter(tournament.id); $event.stopPropagation()"
                         class="flex-1 bg-transparent hover:bg-white/5 border border-black-border text-white hover:border-gold-400/50 hover:text-gold-400 font-bold py-2.5 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn">
                         <svg xmlns="http://www.w3.org/2000/svg"
                             class="h-4 w-4 transition-transform group-hover/btn:scale-110" fill="none"

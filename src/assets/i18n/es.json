@@ -145,7 +145,7 @@
             "STATUS_REGISTRATION_OPEN": "Registro Abierto",
             "MAX_TEAMS": "Máx. Equipos",
             "PRIZE_POOL": "Premio",
-            "PRIZE_POOL_PLACEHOLDER": "ej. $500k USD",
+            "PRIZE_POOL_PLACEHOLDER": "ej. €500k EUR",
             "SUBMIT": "Crear Torneo",
             "CREATING": "Creando..."
         }

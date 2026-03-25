@@ -145,7 +145,7 @@
             "STATUS_ACTIVE": "Active",
             "MAX_TEAMS": "Max Teams",
             "PRIZE_POOL": "Prize Pool",
-            "PRIZE_POOL_PLACEHOLDER": "e.g. $500k USD",
+            "PRIZE_POOL_PLACEHOLDER": "e.g. €500k EUR",
             "SUBMIT": "Create Tournament",
             "CREATING": "Creating..."
         }
@@ -177,7 +177,7 @@
             "PRIZE_POOL": "Prize Pool",
             "ROUND": "Round",
             "SCHEDULE": "Schedule",
-            "VIEW": "View"
+            "VIEW": "View Match"
         },
         "EMPTY": "No tournaments found matching your criteria.",
         "FILTER_STATUSES": {

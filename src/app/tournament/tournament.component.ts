@@ -89,6 +89,12 @@ export class TournamentComponent implements OnInit {
         }
     }
 
+    viewMatchCenter(id: string | undefined) {
+        if (id) {
+            this.router.navigate(['/tournaments', id, 'match-center']);
+        }
+    }
+
     getStatusLabel(status: string): string {
         const map: Record<string, string> = {
             draft: 'Draft',

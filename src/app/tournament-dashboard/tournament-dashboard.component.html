@@ -1,20 +1,20 @@
-@if (isLoading()) {
-<div class="min-h-screen flex items-center justify-center">
-    <div class="flex flex-col items-center gap-4">
-        <div class="w-12 h-12 rounded-full border-2 border-gold-400 border-t-transparent animate-spin"></div>
-        <p class="text-zinc-500 text-sm font-bold">Loading Tournament...</p>
-    </div>
-</div>
-} @else if (tournament()) {
-
 <div class="flex h-[calc(100vh-112px)]">
 
-    <!-- Left Sidebar -->
-    <aside
-        class="w-60 bg-black-card/80 border-r border-black-border flex flex-col shrink-0 sticky top-[112px] h-full overflow-y-auto">
+    <!-- Left Sidebar — always visible -->
+    <aside class="w-60 bg-black-card/80 border-r border-black-border flex flex-col shrink-0 sticky top-[112px] h-full overflow-y-auto">
 
         <!-- Tournament Badge -->
         <div class="p-5 border-b border-black-border">
+            @if (isLoading()) {
+            <!-- Skeleton badge -->
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-zinc-800 animate-pulse shrink-0"></div>
+                <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <div class="h-3 rounded bg-zinc-800 animate-pulse w-3/4"></div>
+                    <div class="h-4 rounded-full bg-zinc-800 animate-pulse w-1/2"></div>
+                </div>
+            </div>
+            } @else {
             <div class="flex items-center gap-3 mb-3">
                 <div
                     class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400/20 to-gold-400/5 border border-gold-400/20 flex items-center justify-center">
@@ -32,16 +32,23 @@
                     </span>
                 </div>
             </div>
+            }
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-1 py-3 px-3 space-y-1">
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            @if (isLoading()) {
+            <!-- Skeleton nav items -->
+            @for (_ of [1,2,3,4,5,6,7,8,9,10,11]; track $index) {
+            <div class="h-10 rounded-xl bg-zinc-800/60 animate-pulse mb-1"></div>
+            }
+            } @else {
             @for (item of sidebarItems; track item.id) {
-            <button (click)="setTab(item.id)"
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all duration-200"
+            <button (click)="setActiveTab(item.id)"
                 [ngClass]="activeTab() === item.id
-                    ? 'bg-gold-400/10 text-gold-400 border border-gold-400/20'
-                    : 'text-zinc-500 hover:text-white hover:bg-white/5 border border-transparent'">
+                    ? 'bg-white text-black'
+                    : 'text-zinc-500 hover:bg-white/10 hover:text-white'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all text-left">
 
                 <!-- Icons -->
                 @switch (item.icon) {
@@ -117,10 +124,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 }
+                @case ('list') {
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                }
 
                 }
                 {{ item.label }}
             </button>
+            }
             }
         </nav>
 
@@ -142,7 +156,7 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto">
 
-        <!-- Top Bar with Breadcrumb & Actions -->
+        <!-- Top Bar — always static -->
         <div
             class="flex items-center justify-between px-8 py-4 border-b border-black-border bg-black-card/80 backdrop-blur-md sticky top-0 z-10">
             <!-- Breadcrumb -->
@@ -153,16 +167,18 @@
                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
-                <span class="text-gold-400 font-bold">Settings</span>
+                <span class="text-gold-400 font-bold">
+                    @if (isLoading()) { Loading... } @else { {{ settings.general.name || 'Settings' }} }
+                </span>
             </div>
 
             <!-- Actions -->
             <div class="flex items-center gap-3">
-                <button (click)="discardChanges()"
-                    class="px-5 py-2 rounded-lg border border-black-border text-zinc-400 hover:text-white hover:border-zinc-500 font-bold text-sm transition-all">
+                <button (click)="discardChanges()" [disabled]="isLoading()"
+                    class="px-5 py-2 rounded-lg border border-black-border text-zinc-400 hover:text-white hover:border-zinc-500 font-bold text-sm transition-all disabled:opacity-30">
                     Discard
                 </button>
-                <button (click)="saveChanges()" [disabled]="isSaving()"
+                <button (click)="saveChanges()" [disabled]="isSaving() || isLoading()"
                     class="px-5 py-2 rounded-lg bg-gold-400 hover:bg-gold-400/90 text-black font-bold text-sm transition-all hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] disabled:opacity-40 flex items-center gap-2">
                     @if (isSaving()) {
                     <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
@@ -180,7 +196,45 @@
             </div>
         </div>
 
-        <!-- Tab Content -->
+        <!-- Football Loader (shown while loading) -->
+        @if (isLoading()) {
+        <div class="flex flex-col items-center justify-center h-[calc(100%-73px)] gap-6">
+            <!-- Football SVG with bounce animation -->
+            <div class="relative flex flex-col items-center">
+                <div style="animation: footballBounce 0.8s ease-in-out infinite alternate;">
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="28" cy="28" r="27" fill="white" stroke="#27272a" stroke-width="2"/>
+                        <!-- Centre pentagon -->
+                        <polygon points="28,14 37,21 33.5,33 22.5,33 19,21" fill="#18181b"/>
+                        <!-- Surrounding pentagons (5) -->
+                        <polygon points="28,3 35,9 37,21 19,21 21,9" fill="#18181b" opacity="0.18"/>
+                        <polygon points="44,16 49,26 37,21 35,9" fill="#18181b" opacity="0.18"/>
+                        <polygon points="42,40 33.5,33 37,21 49,26" fill="#18181b" opacity="0.18"/>
+                        <polygon points="14,40 22.5,33 33.5,33 42,40 28,47" fill="#18181b" opacity="0.18"/>
+                        <polygon points="7,26 19,21 22.5,33 14,40" fill="#18181b" opacity="0.18"/>
+                    </svg>
+                </div>
+                <!-- Shadow that shrinks when ball is up -->
+                <div class="w-10 h-2 rounded-full bg-black/30 mt-2"
+                    style="animation: shadowPulse 0.8s ease-in-out infinite alternate;"></div>
+            </div>
+            <p class="text-zinc-500 text-sm font-bold tracking-wider uppercase">Loading Tournament...</p>
+        </div>
+
+        <style>
+            @keyframes footballBounce {
+                from { transform: translateY(0px); }
+                to   { transform: translateY(-28px); }
+            }
+            @keyframes shadowPulse {
+                from { transform: scaleX(1); opacity: 0.3; }
+                to   { transform: scaleX(0.55); opacity: 0.1; }
+            }
+        </style>
+        }
+
+        <!-- Tab Content (only when loaded) -->
+        @if (!isLoading() && tournament()) {
         <div class="p-8">
             @if (activeTab() === 'general') {
             <app-tournament-general [data]="settings.general"></app-tournament-general>
@@ -194,8 +248,12 @@
             <app-tournament-teams [tournamentId]="tournament()?.id || ''"></app-tournament-teams>
             }
 
+            @if (activeTab() === 'matches') {
+            <app-tournament-matches [tournamentId]="tournament()?.id || ''"></app-tournament-matches>
+            }
+
             @if (activeTab() === 'format') {
-            <app-tournament-format [data]="settings.format"
+            <app-tournament-format [data]="settings.format" [tournamentId]="tournament()?.id || ''"
                 (formatChange)="onFormatChange($event)"></app-tournament-format>
             }
 
@@ -225,6 +283,7 @@
                 [tournamentId]="tournament()?.id || ''"></app-tournament-results>
             }
         </div>
+        }
     </main>
 </div>
 
@@ -240,6 +299,4 @@
     </div>
     <span class="text-sm text-white font-bold">{{ toastMessage() }}</span>
 </div>
-}
-
 }

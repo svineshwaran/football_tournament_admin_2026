@@ -38,7 +38,7 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
     isModalOpen = signal(false);
     isSaving = signal(false);
     modalMode = signal<'new' | 'existing'>('existing');
-    selectedExistingTeamId = signal<string>('');
+    selectedExistingTeamIds = signal<string[]>([]);
 
     newTeam = signal<Partial<Team>>({
         name: '',
@@ -125,7 +125,7 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
             city: '',
             logoUrl: ''
         });
-        this.selectedExistingTeamId.set('');
+        this.selectedExistingTeamIds.set([]);
         this.isModalOpen.set(true);
     }
 
@@ -137,24 +137,37 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         this.modalMode.set(mode);
     }
 
+    toggleExistingTeamSelection(teamId: string) {
+        this.selectedExistingTeamIds.update(ids => {
+            if (ids.includes(teamId)) {
+                return ids.filter(id => id !== teamId);
+            } else {
+                return [...ids, teamId];
+            }
+        });
+    }
+
     saveTeam() {
         if (this.modalMode() === 'existing') {
-            const teamId = this.selectedExistingTeamId();
-            if (!teamId) return;
+            const teamIds = this.selectedExistingTeamIds();
+            if (!teamIds || teamIds.length === 0) return;
 
             this.isSaving.set(true);
-            this.http.post<{ success: boolean, data: TournamentTeam }>(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/${teamId}`, {})
+            this.http.post<{ success: boolean, data: TournamentTeam[] }>(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/bulk`, { teamIds })
                 .subscribe({
                     next: (res) => {
-                        this.teams.update(t => [res.data, ...t]);
-                        // Remove assigned team from available list
-                        this.availableTeams.update(av => av.filter(a => a.id !== teamId));
+                        const newRegistrations = res.data || [];
+                        this.teams.update(t => [...newRegistrations, ...t]);
+
+                        // Remove assigned teams from available list
+                        const addedSet = new Set(teamIds);
+                        this.availableTeams.update(av => av.filter(a => !addedSet.has(a.id)));
 
                         this.isSaving.set(false);
                         this.closeModal();
                     },
                     error: (err) => {
-                        console.error('Error assigning team:', err);
+                        console.error('Error assigning teams:', err);
                         this.isSaving.set(false);
                     }
                 });

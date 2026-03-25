@@ -16,10 +16,13 @@ export class TournamentResultsComponent implements OnInit {
     private tournamentService = inject(TournamentService);
     structure = signal<any>(null);
     isLoadingStructure = signal(false);
+    matches = signal<any[]>([]);
+    isLoadingMatches = signal(false);
 
     ngOnInit() {
         if (this.tournamentId) {
             this.loadStructure();
+            this.loadMatches();
         }
     }
 
@@ -33,6 +36,20 @@ export class TournamentResultsComponent implements OnInit {
             error: (err: any) => {
                 console.error("Failed to load tournament structure", err);
                 this.isLoadingStructure.set(false);
+            }
+        });
+    }
+
+    loadMatches() {
+        this.isLoadingMatches.set(true);
+        this.tournamentService.getMatchesByStatus('completed', this.tournamentId).subscribe({
+            next: (data: any[]) => {
+                this.matches.set(data);
+                this.isLoadingMatches.set(false);
+            },
+            error: (err: any) => {
+                console.error("Failed to load completed matches", err);
+                this.isLoadingMatches.set(false);
             }
         });
     }
