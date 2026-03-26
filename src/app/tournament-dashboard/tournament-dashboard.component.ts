@@ -14,6 +14,7 @@ import { TournamentFinanceComponent } from './components/tournament-finance/tour
 import { TournamentPresentationComponent } from './components/tournament-presentation/tournament-presentation.component';
 import { TournamentResultsComponent } from './components/tournament-results/tournament-results.component';
 import { TournamentTeamsComponent } from './components/tournament-teams/tournament-teams.component';
+import { TournamentMatchesComponent } from './components/tournament-matches/tournament-matches.component';
 
 export interface TournamentSettings {
     general: {
@@ -57,6 +58,7 @@ export interface TournamentSettings {
         lossPoints: number;
         tieBreaker: string;
         qualRules: string;
+        format_data?: any[];
     };
     schedule: {
         startDate: string;
@@ -128,7 +130,8 @@ export interface TournamentSettings {
         TournamentFinanceComponent,
         TournamentPresentationComponent,
         TournamentResultsComponent,
-        TournamentTeamsComponent
+        TournamentTeamsComponent,
+        TournamentMatchesComponent
     ],
     templateUrl: './tournament-dashboard.component.html',
 })
@@ -150,6 +153,7 @@ export class TournamentDashboardComponent implements OnInit {
         { id: 'general', label: 'General', icon: 'settings' },
         { id: 'participants', label: 'Participants', icon: 'users' },
         { id: 'teams', label: 'Teams', icon: 'shield' },
+        { id: 'matches', label: 'Matches', icon: 'list' },
         { id: 'format', label: 'Format', icon: 'grid' },
         { id: 'schedule', label: 'Schedule', icon: 'calendar' },
         { id: 'rules', label: 'Rules', icon: 'scale-balanced' },
@@ -160,10 +164,16 @@ export class TournamentDashboardComponent implements OnInit {
     ];
 
     ngOnInit() {
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id) {
-            this.loadTournament(id);
-        }
+        this.route.paramMap.subscribe(params => {
+            const id = params.get('id');
+            if (id) {
+                this.loadTournament(id);
+            }
+        });
+    }
+
+    setActiveTab(tabId: string) {
+        this.activeTab.set(tabId);
     }
 
     getDefaultSettings(): TournamentSettings {
@@ -308,10 +318,32 @@ export class TournamentDashboardComponent implements OnInit {
         if (tournament.settings) {
             this.settings = { ...this.settings, ...tournament.settings };
         }
+
+        // Ensure we load the format entity data directly if available
+        if (tournament.format) {
+            this.settings.format = {
+                ...this.settings.format,
+                type: tournament.format.format_type || this.settings.format.type,
+                format_data: tournament.format.format_data || (this.settings.format as any).format_data,
+                homeAway: tournament.format.home_away_enabled !== undefined ? tournament.format.home_away_enabled : this.settings.format.homeAway,
+                winPoints: tournament.format.win_points ?? this.settings.format.winPoints,
+                drawPoints: tournament.format.draw_points ?? this.settings.format.drawPoints,
+                lossPoints: tournament.format.loss_points ?? this.settings.format.lossPoints
+            };
+        }
     }
 
     setTab(tab: string) {
         this.activeTab.set(tab);
+        if (tab === 'format' && this.settings.format) {
+            // Force a new object reference so ngOnChanges fires in the child component
+            this.settings.format = { ...this.settings.format };
+        }
+    }
+
+    handleSettingsUpdate(key: keyof TournamentSettings, data: any) {
+        this.settings[key] = { ...this.settings[key], ...data };
+        this.formatChanged = true;
     }
 
     onFormatChange(newFormat: any) {
@@ -347,6 +379,14 @@ export class TournamentDashboardComponent implements OnInit {
             playerLimit: this.settings.participants.playerLimit,
             squadSize: this.settings.participants.squadSize,
             settings: this.settings,
+            format: {
+                format_type: this.settings.format.type,
+                format_data: (this.settings.format as any).format_data,
+                home_away_enabled: this.settings.format.homeAway,
+                win_points: this.settings.format.winPoints,
+                draw_points: this.settings.format.drawPoints,
+                loss_points: this.settings.format.lossPoints
+            }
         }).subscribe({
             next: (updated) => {
                 this.tournament.set(updated);

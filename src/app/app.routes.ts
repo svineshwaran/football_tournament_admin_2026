@@ -4,6 +4,14 @@ import { MainLayoutComponent } from './components/main-layout/main-layout.compon
 
 export const routes: Routes = [
     {
+        path: 'public/tournament/:id',
+        loadComponent: () => import('./public/tournament-portal/tournament-portal.component').then(m => m.TournamentPortalComponent)
+    },
+    {
+        path: 'public/tournament/:tournamentId/match/:id',
+        loadComponent: () => import('./public/match-scoreboard/match-scoreboard.component').then(m => m.MatchScoreboardComponent)
+    },
+    {
         path: 'auth',
         loadChildren: () => import('./auth/auth-module').then(m => m.AuthModule)
     },
@@ -24,6 +32,14 @@ export const routes: Routes = [
             {
                 path: 'tournaments/:id',
                 loadComponent: () => import('./tournament-dashboard/tournament-dashboard.component').then(m => m.TournamentDashboardComponent)
+            },
+            {
+                path: 'tournaments/:id/match-center',
+                loadComponent: () => import('./tournament-dashboard/components/match-center/match-center.component').then(m => m.MatchCenterComponent)
+            },
+            {
+                path: 'tournaments/:id/matches/:matchId',
+                loadComponent: () => import('./tournament-dashboard/components/match-details/match-details.component').then(m => m.MatchDetailsComponent)
             },
             {
                 path: 'teams',
