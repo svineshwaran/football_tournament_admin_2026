@@ -46,4 +46,8 @@ export class SettingsService {
     deletePermission(id: number): Observable<any> {
         return this.http.delete<any>(`${this.baseUrl}/permissions/${id}`);
     }
+    
+    changePassword(data: any): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/change-password`, data);
+    }
 }

@@ -1,134 +1,690 @@
-<div class="space-y-8">
-    <!-- Page Title -->
-    <div>
-        <h1 class="text-3xl font-black text-white tracking-tight">Competition Format</h1>
-        <p class="text-zinc-500 mt-1.5">Define the structural progression, points, and tie-breaker systems.
-        </p>
+<!-- ============================================================ -->
+<!-- FORMAT SELECTION CARDS (shown when no board active)         -->
+<!-- ============================================================ -->
+<div *ngIf="!showBoard" class="space-y-10 animate-[fadeIn_0.5s_ease-out]">
+
+    <div class="text-center space-y-4 max-w-2xl mx-auto">
+        <h1 class="text-3xl lg:text-4xl font-black text-white tracking-tight">{{ 'TOURNAMENT_DASHBOARD.FORMAT.CHOOSE_TITLE' | translate }}</h1>
+        <p class="text-zinc-400 text-sm">{{ 'TOURNAMENT_DASHBOARD.FORMAT.CHOOSE_SUBTITLE' | translate }}</p>
+        <div class="h-px w-24 bg-gradient-to-r from-transparent via-gold-400/50 to-transparent mx-auto mt-6"></div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Format Type -->
-        <div class="bg-black-card border border-black-border rounded-xl p-6 space-y-6">
-            <h2 class="text-lg font-bold text-white">Structure</h2>
-
-            <div>
-                <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Format
-                    Type</label>
-                <select [(ngModel)]="data.type"
-                    class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none transition-all">
-                    <option value="league" class="bg-black-card">League (Round Robin)</option>
-                    <option value="knockout" class="bg-black-card">Knockout</option>
-                    <option value="group_knockout" class="bg-black-card">Group Stage + Knockout</option>
-                    <option value="double_elim" class="bg-black-card">Double Elimination</option>
-                </select>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- A. Group Phase Only -->
+        <button (click)="selectFormat('group')"
+            class="group relative bg-black-card border rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(212,175,55,0.15)] overflow-hidden"
+            [ngClass]="selectedFormat === 'group' ? 'border-gold-400 shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-black-border hover:border-zinc-700'">
+            <div
+                class="h-32 mb-6 rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900 flex items-center justify-center border border-white/5"
+                [ngClass]="{'from-gold-400/10 to-gold-400/5 border-gold-400/20': selectedFormat === 'group'}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-16 h-16 transition-colors" 
+                    [ngClass]="selectedFormat === 'group' ? 'text-gold-400' : 'text-zinc-600 group-hover:text-gold-400/60'"
+                    fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
             </div>
+            <div *ngIf="selectedFormat === 'group'" class="absolute top-4 right-4 animate-pulse">
+                <span class="flex h-2 w-2 rounded-full bg-gold-400"></span>
+            </div>
+            <h3 class="text-xl font-bold mb-2 transition-colors" [ngClass]="selectedFormat === 'group' ? 'text-gold-400' : 'text-white group-hover:text-gold-400'">{{ 'TOURNAMENT_DASHBOARD.FORMAT.GROUP_ONLY' | translate }}
+            </h3>
+            <p class="text-sm text-zinc-500">{{ 'TOURNAMENT_DASHBOARD.FORMAT.GROUP_ONLY_DESC' | translate }}</p>
+            <p class="mt-4 text-xs font-bold" [ngClass]="selectedFormat === 'group' ? 'text-gold-400' : 'text-gold-400/70'">{{ selectedFormat === 'group' ? ('COMMON.CURRENTLY_SELECTED' | translate) : ('COMMON.CONFIGURE' | translate) }}</p>
+        </button>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Total
-                        Groups</label>
-                    <input type="number" [(ngModel)]="data.numGroups" [disabled]="data.type === 'knockout'"
-                        class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none transition-all disabled:opacity-50" />
+        <!-- B. Groups + Knockout -->
+        <button (click)="selectFormat('group_knockout')"
+            class="group relative bg-black-card border rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(212,175,55,0.15)] overflow-hidden"
+            [ngClass]="selectedFormat === 'group_knockout' ? 'border-gold-400 shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-black-border hover:border-zinc-700'">
+            <div
+                class="h-32 mb-6 rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900 flex items-center justify-center border border-white/5"
+                [ngClass]="{'from-gold-400/10 to-gold-400/5 border-gold-400/20': selectedFormat === 'group_knockout'}">
+                <div class="flex items-center gap-2 transition-colors" [ngClass]="selectedFormat === 'group_knockout' ? 'text-gold-400' : 'text-zinc-600 group-hover:text-gold-400/60'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 opacity-40" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
                 </div>
-                <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Teams
-                        Per Group</label>
-                    <input type="number" [(ngModel)]="data.teamsPerGroup" [disabled]="data.type === 'knockout'"
-                        class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none transition-all disabled:opacity-50" />
+            </div>
+            <div *ngIf="selectedFormat === 'group_knockout'" class="absolute top-4 right-4 animate-pulse">
+                <span class="flex h-2 w-2 rounded-full bg-gold-400"></span>
+            </div>
+            <h3 class="text-xl font-bold mb-2 transition-colors" [ngClass]="selectedFormat === 'group_knockout' ? 'text-gold-400' : 'text-white group-hover:text-gold-400'">{{ 'TOURNAMENT_DASHBOARD.FORMAT.GROUP_KNOCKOUT' | translate }}
+            </h3>
+            <p class="text-sm text-zinc-500">{{ 'TOURNAMENT_DASHBOARD.FORMAT.GROUP_KNOCKOUT_DESC' | translate }}</p>
+            <p class="mt-4 text-xs font-bold" [ngClass]="selectedFormat === 'group_knockout' ? 'text-gold-400' : 'text-gold-400/70'">{{ selectedFormat === 'group_knockout' ? ('COMMON.CURRENTLY_SELECTED' | translate) : ('COMMON.CONFIGURE' | translate) }}</p>
+        </button>
+
+        <!-- C. Knockout Only -->
+        <button (click)="selectFormat('knockout')"
+            class="group relative bg-black-card border rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgba(212,175,55,0.15)] overflow-hidden"
+            [ngClass]="selectedFormat === 'knockout' ? 'border-gold-400 shadow-[0_0_20px_rgba(212,175,55,0.1)]' : 'border-black-border hover:border-zinc-700'">
+            <div
+                class="h-32 mb-6 rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900 flex items-center justify-center border border-white/5"
+                [ngClass]="{'from-gold-400/10 to-gold-400/5 border-gold-400/20': selectedFormat === 'knockout'}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-16 h-16 transition-colors"
+                    [ngClass]="selectedFormat === 'knockout' ? 'text-gold-400' : 'text-zinc-600 group-hover:text-gold-400/60'"
+                    fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <div *ngIf="selectedFormat === 'knockout'" class="absolute top-4 right-4 animate-pulse">
+                <span class="flex h-2 w-2 rounded-full bg-gold-400"></span>
+            </div>
+            <h3 class="text-xl font-bold mb-2 transition-colors" [ngClass]="selectedFormat === 'knockout' ? 'text-gold-400' : 'text-white group-hover:text-gold-400'">{{ 'TOURNAMENT_DASHBOARD.FORMAT.KNOCKOUT_ONLY' | translate }}</h3>
+            <p class="text-sm text-zinc-500">{{ 'TOURNAMENT_DASHBOARD.FORMAT.KNOCKOUT_ONLY_DESC' | translate }}</p>
+            <p class="mt-4 text-xs font-bold" [ngClass]="selectedFormat === 'knockout' ? 'text-gold-400' : 'text-gold-400/70'">{{ selectedFormat === 'knockout' ? ('COMMON.CURRENTLY_SELECTED' | translate) : ('COMMON.CONFIGURE' | translate) }}</p>
+        </button>
+    </div>
+
+    <!-- Custom Builder -->
+    <div class="mt-12 bg-black-card/50 border border-black-border rounded-3xl p-8 lg:p-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-gold-400/5 blur-[100px] rounded-full pointer-events-none"></div>
+        <div class="text-center mb-8 relative z-10">
+            <h3 class="text-xl font-black text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.CUSTOM_BUILDER_TITLE' | translate }}</h3>
+            <p class="text-sm text-zinc-500 mt-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.CUSTOM_BUILDER_SUBTITLE' | translate }}
+            </p>
+        </div>
+        <div class="flex flex-wrap justify-center gap-4 mb-10 relative z-10">
+            <button (click)="addStage('Group')"
+                class="btn btn-outline border-zinc-700 text-zinc-300 rounded-full px-8 gap-3 font-bold transition-all hover:bg-white hover:text-black hover:scale-105">{{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_GROUP' | translate }}</button>
+            <button (click)="addStage('Knockout')"
+                class="btn btn-outline border-zinc-700 text-zinc-300 rounded-full px-8 gap-3 font-bold transition-all hover:bg-white hover:text-black hover:scale-105">{{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_BRACKET' | translate }}</button>
+            <button (click)="addStage('Match')"
+                class="btn btn-outline border-zinc-700 text-zinc-300 rounded-full px-8 gap-3 font-bold transition-all hover:bg-white hover:text-black hover:scale-105">{{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_SINGLE_MATCH' | translate }}</button>
+        </div>
+        <div class="space-y-3 max-w-3xl mx-auto min-h-[60px]">
+            <div *ngIf="customStages.length === 0"
+                class="text-center py-10 border-2 border-dashed border-zinc-800 rounded-2xl bg-black/20">
+                <p class="text-zinc-500 font-medium">{{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_STAGES_HINT' | translate }}</p>
+            </div>
+            <div *ngFor="let stage of customStages; let i = index"
+                class="flex items-center bg-black-card border border-black-border hover:border-zinc-700 rounded-xl p-4 transition-all">
+                <div class="pr-4 text-zinc-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+                    </svg>
                 </div>
-            </div>
-
-            <div>
-                <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Qualification
-                    Rules</label>
-                <select [(ngModel)]="data.qualRules" [disabled]="data.type === 'knockout'"
-                    class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none transition-all disabled:opacity-50">
-                    <option value="Top 1 Advance" class="bg-black-card">Top 1 Advance</option>
-                    <option value="Top 2 Advance" class="bg-black-card">Top 2 Advance</option>
-                    <option value="Top 3 Advance" class="bg-black-card">Top 3 Advance</option>
-                    <option value="All Advance" class="bg-black-card">All Teams Advance</option>
-                </select>
-            </div>
-
-            <div class="pt-2">
-                <label
-                    class="cursor-pointer label flex items-center justify-between bg-white/5 border border-black-border rounded-lg px-4 py-3 hover:border-gold-400/50 transition-all">
-                    <div>
-                        <span class="label-text text-white font-bold block">Home & Away Format</span>
-                        <span class="text-[10px] text-zinc-500 block mt-1">Play every opponent twice</span>
-                    </div>
-                    <input type="checkbox" [(ngModel)]="data.homeAway" class="toggle toggle-warning" />
-                </label>
+                <div class="flex-1 flex items-center gap-4">
+                    <input type="text" [(ngModel)]="stage.name"
+                        class="bg-transparent border-none focus:ring-0 text-white font-bold p-0 flex-1 text-base outline-none"
+                        [placeholder]="'TOURNAMENT_DASHBOARD.FORMAT.STAGE_NAME' | translate">
+                    <span
+                        class="hidden md:inline-flex px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider"
+                        [ngClass]="{'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20': stage.type === 'Group', 'bg-rose-500/10 text-rose-400 border border-rose-500/20': stage.type === 'Knockout', 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': stage.type === 'Match'}">{{
+                        stage.type }}</span>
+                </div>
+                <button (click)="removeStage(i)"
+                    class="w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:bg-red-500/10 hover:text-red-400 transition-colors ml-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Points & Systems -->
-        <div class="bg-black-card border border-black-border rounded-xl p-6 space-y-6">
-            <h2 class="text-lg font-bold text-white">Points System & Tie-Breakers</h2>
+<!-- ============================================================ -->
+<!-- STRUCTURE BOARD (shown after CREATE / loaded)               -->
+<!-- ============================================================ -->
+<div *ngIf="showBoard" class="animate-[fadeIn_0.3s_ease-out]">
 
-            <div class="grid grid-cols-3 gap-4">
-                <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Win
-                        Points</label>
-                    <input type="number" [(ngModel)]="data.winPoints"
-                        class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-emerald-400 font-bold focus:border-gold-400 focus:outline-none transition-all text-center" />
+    <!-- Board Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-2xl font-black text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.STRUCTURE_TITLE' | translate }}</h2>
+            <p class="text-sm text-zinc-500 mt-1">{{ 'TOURNAMENT_DASHBOARD.FORMAT.STRUCTURE_SUBTITLE' | translate }}</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button (click)="resetFormat()"
+                class="px-4 py-2 rounded-lg border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 text-sm font-bold transition-all flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                {{ 'TOURNAMENT_DASHBOARD.FORMAT.CHANGE_FORMAT_BTN' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <!-- Phase Columns Row -->
+    <div class="flex gap-0 overflow-x-auto pb-4 min-h-[500px]">
+
+        <!-- Each Phase -->
+        <ng-container *ngFor="let phase of boardPhases; let pi = index">
+
+            <!-- ═══ GROUP phase: narrow column with header + cards ═══════════ -->
+            <div *ngIf="phase.kind === 'group'"
+                class="flex-shrink-0 w-64 border-r border-zinc-800 last:border-r-0 flex flex-col">
+
+                <!-- Phase Header -->
+                <div
+                    class="px-4 pt-2 pb-3 sticky top-0 bg-black-card/90 backdrop-blur-sm z-10 border-b border-zinc-800 mb-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-black text-white">{{ phase.name | translate }}</span>
+                        <button *ngIf="boardPhases.length > 1" (click)="removePhase(pi)"
+                            class="w-7 h-7 rounded-md flex items-center justify-center text-zinc-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                            [title]="'TOURNAMENT_DASHBOARD.FORMAT.REMOVE_PHASE' | translate">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Draw
-                        Points</label>
-                    <input type="number" [(ngModel)]="data.drawPoints"
-                        class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-gold-400 font-bold focus:border-gold-400 focus:outline-none transition-all text-center" />
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Loss
-                        Points</label>
-                    <input type="number" [(ngModel)]="data.lossPoints"
-                        class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-red-400 font-bold focus:border-gold-400 focus:outline-none transition-all text-center" />
+
+                <!-- Groups body -->
+                <div class="flex-1 px-3 space-y-4 overflow-y-auto">
+                    <!-- Each Group Card -->
+                    <div *ngFor="let group of phase.groups; let gi = index"
+                        class="rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden">
+
+                        <!-- Group Header with toggle-edit name -->
+                        <div class="flex items-center justify-between px-3 py-2 bg-indigo-600 text-white">
+                            <!-- Read-only: name + pencil + delete -->
+                            <ng-container *ngIf="editingGroupId !== group.id">
+                                <span class="text-xs font-black uppercase tracking-wider flex-1">{{ group.name | translate }}</span>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button (click)="toggleGroupEdit(group)"
+                                        class="text-indigo-200 hover:text-white transition-colors" [title]="'TOURNAMENT_DASHBOARD.FORMAT.RENAME' | translate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+                                    <button (click)="removeGroupFromPhase(phase, gi)"
+                                        class="text-indigo-200 hover:text-red-300 transition-colors"
+                                        [title]="'TOURNAMENT_DASHBOARD.FORMAT.REMOVE_GROUP' | translate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </ng-container>
+                            <!-- Edit mode: input + check -->
+                            <ng-container *ngIf="editingGroupId === group.id">
+                                <input type="text" [(ngModel)]="group.name" (ngModelChange)="onGroupNameChange(group)"
+                                    class="text-xs font-black uppercase tracking-wider bg-indigo-700 border border-indigo-400 rounded px-2 py-0.5 outline-none text-white w-full mr-2 focus:ring-1 focus:ring-white"
+                                    [placeholder]="'TOURNAMENT_DASHBOARD.FORMAT.GROUP_NAME' | translate" autofocus />
+                                <button (click)="toggleGroupEdit(group)"
+                                    class="text-white hover:text-green-300 shrink-0" [title]="'COMMON.DONE' | translate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </ng-container>
+                        </div>
+
+                        <!-- Team Slots -->
+                        <div class="divide-y divide-zinc-800">
+                            <div *ngFor="let slot of group.slots; let si = index"
+                                class="flex items-center justify-between px-3 py-2 hover:bg-zinc-800/40 transition-colors group/slot gap-2">
+                                <!-- Read-only -->
+                                <ng-container *ngIf="!isSlotEditing(group, si)">
+                                    <span class="text-xs font-bold flex-1"
+                                        [ngClass]="slot.label === 'EMPTY SLOT' ? 'text-zinc-500 italic' : 'text-gold-400'">
+                                        {{ slot.label | translate }}
+                                    </span>
+                                    <div
+                                        class="flex items-center gap-1 opacity-0 group-hover/slot:opacity-100 transition-opacity">
+                                        <button (click)="toggleSlotEdit(group, si)"
+                                            class="text-zinc-400 hover:text-white transition-colors" [title]="'COMMON.EDIT' | translate">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            </svg>
+                                        </button>
+                                        <button (click)="removeSlotFromGroup(group, si)"
+                                            class="text-zinc-400 hover:text-red-400 transition-colors" [title]="'COMMON.REMOVE' | translate">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </ng-container>
+                                <!-- Edit mode -->
+                                <ng-container *ngIf="isSlotEditing(group, si)">
+                                    <select [(ngModel)]="slot.label"
+                                        (ngModelChange)="onSlotLabelChange(slot, group, si)"
+                                        class="bg-zinc-800 border border-indigo-500 focus:border-indigo-400 rounded-lg px-2 py-1 text-xs font-bold text-white outline-none flex-1 appearance-none">
+                                        <option *ngFor="let t of (slotOptions[group.id + ':' + si] || teamNames)"
+                                            [value]="t">{{ t }}
+                                        </option>
+                                    </select>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button (click)="toggleSlotEdit(group, si)"
+                                            class="text-zinc-400 hover:text-white transition-colors" [title]="'COMMON.CLOSE' | translate">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- Add Slot -->
+                        <button (click)="addSlotToGroup(group)"
+                            class="w-full py-2 text-xs font-bold text-indigo-400 hover:bg-indigo-500/10 transition-colors flex items-center justify-center gap-1 border-t border-zinc-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            {{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_SLOT' | translate }}
+                        </button>
+                    </div>
+
+                    <!-- Add Group / Bracket / Match -->
+                    <button (click)="addGroupToPhase(phase)"
+                        class="w-full py-2 rounded-lg border border-dashed border-zinc-700 text-zinc-500 hover:border-indigo-500/50 hover:text-indigo-400 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        + {{ 'TOURNAMENT_DASHBOARD.FORMAT.BOARD.GROUP' | translate }}
+                    </button>
+                    <button (click)="addKnockoutPhase()"
+                        class="w-full py-2 rounded-lg border border-dashed border-zinc-700 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        + {{ 'TOURNAMENT_DASHBOARD.FORMAT.BOARD.BRACKET' | translate }}
+                    </button>
+                    <button (click)="addSingleMatchPhase()"
+                        class="w-full py-2 mb-4 rounded-lg border border-dashed border-zinc-700 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                        + {{ 'TOURNAMENT_DASHBOARD.FORMAT.BOARD.SINGLE_MATCH' | translate }}
+                    </button>
                 </div>
             </div>
 
-            <div class="mt-8">
-                <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2 block">Tie-Breaker
-                    Priority Order</label>
-                <div class="space-y-2">
-                    <div
-                        class="flex items-center gap-3 bg-white/5 border border-black-border rounded-lg px-4 py-2 hover:border-white/20 transition-all cursor-move">
-                        <span class="text-zinc-500 font-bold text-xs mt-0.5">1</span>
-                        <span class="text-sm font-bold text-white">Points Total</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto text-zinc-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
-                        </svg>
+            <!-- ═══ KNOCKOUT phase: vertical block with phase name header + round columns ═══ -->
+            <div *ngIf="phase.kind === 'knockout'"
+                class="flex-shrink-0 flex flex-col border-r border-zinc-800 last:border-r-0">
+
+                <!-- Phase name header spanning all rounds -->
+                <div
+                    class="px-4 pt-2 pb-3 sticky top-0 bg-black-card/90 backdrop-blur-sm z-10 border-b border-zinc-800 mb-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-black text-white">{{ phase.name | translate }}</span>
+                        <button *ngIf="boardPhases.length > 1" (click)="removePhase(pi)"
+                            class="w-7 h-7 rounded-md flex items-center justify-center text-zinc-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                            [title]="'TOURNAMENT_DASHBOARD.FORMAT.REMOVE_PHASE' | translate">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
-                    <div
-                        class="flex items-center gap-3 bg-white/5 border border-black-border rounded-lg px-4 py-2 hover:border-white/20 transition-all cursor-move">
-                        <span class="text-zinc-500 font-bold text-xs mt-0.5">2</span>
-                        <span class="text-sm font-bold text-white">Goal Difference</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto text-zinc-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
-                        </svg>
-                    </div>
-                    <div
-                        class="flex items-center gap-3 bg-white/5 border border-black-border rounded-lg px-4 py-2 hover:border-white/20 transition-all cursor-move">
-                        <span class="text-zinc-500 font-bold text-xs mt-0.5">3</span>
-                        <span class="text-sm font-bold text-white">Head-to-head Result</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto text-zinc-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
-                        </svg>
-                    </div>
-                    <div
-                        class="flex items-center gap-3 bg-white/5 border border-black-border rounded-lg px-4 py-2 hover:border-white/20 transition-all cursor-move">
-                        <span class="text-zinc-500 font-bold text-xs mt-0.5">4</span>
-                        <span class="text-sm font-bold text-white">Goals Scored</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-auto text-zinc-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
-                        </svg>
+                </div>
+
+                <!-- Round columns side by side -->
+                <div class="flex flex-row flex-1">
+                    <div *ngFor="let round of phase.rounds; let ri = index"
+                        class="w-52 border-r border-zinc-800 last:border-r-0 flex flex-col">
+
+                        <!-- Round name (editable) -->
+                        <div class="px-3 py-2 border-b border-zinc-800 mb-3">
+                            <input type="text" [(ngModel)]="round.name"
+                                class="text-xs font-black text-zinc-400 uppercase tracking-wider bg-transparent border-none outline-none w-full focus:ring-0 focus:text-white"
+                                [placeholder]="'TOURNAMENT_DASHBOARD.FORMAT.ROUND_NAME' | translate" />
+                        </div>
+
+                        <!-- Match cards -->
+                        <div class="px-3 space-y-4 flex-1">
+                            <div *ngFor="let match of round.matches; let mi = index"
+                                class="rounded-xl bg-zinc-900 border border-zinc-800 overflow-hidden">
+                                <!-- Match header -->
+                                <div class="flex items-center justify-between px-3 py-2 bg-violet-700 text-white">
+                                    <span class="text-xs font-black uppercase tracking-wider">{{ 'COMMON.MATCH' | translate }} {{ mi + 1 }}</span>
+                                    <button (click)="removeMatchFromRound(round, mi)"
+                                        class="text-violet-200 hover:text-red-200 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Home slot -->
+                                <div class="px-2 py-1.5 border-b border-zinc-800">
+                                    <!-- Placeholder round: team dropdown -->
+                                    <ng-container *ngIf="match.isPlaceholder">
+                                        <select [(ngModel)]="match.home" (ngModelChange)="onMatchSlotChange(match)"
+                                            class="bg-transparent border border-zinc-700 focus:border-violet-400 rounded-md px-2 py-1 text-xs font-bold text-gold-400 outline-none w-full appearance-none">
+                                            <option *ngFor="let t of teamNames" [value]="t">{{ t }}</option>
+                                        </select>
+                                    </ng-container>
+                                    <!-- Later round: read-only "Winner of..." label -->
+                                    <ng-container *ngIf="!match.isPlaceholder">
+                                        <span class="text-xs font-bold text-violet-300 italic px-1">{{ match.home
+                                            }}</span>
+                                    </ng-container>
+                                </div>
+                                <!-- Away slot -->
+                                <div class="px-2 py-1.5">
+                                    <ng-container *ngIf="match.isPlaceholder">
+                                        <select [(ngModel)]="match.away" (ngModelChange)="onMatchSlotChange(match)"
+                                            class="bg-transparent border border-zinc-700 focus:border-violet-400 rounded-md px-2 py-1 text-xs font-bold text-gold-400 outline-none w-full appearance-none">
+                                            <option *ngFor="let t of teamNames" [value]="t">{{ t }}</option>
+                                        </select>
+                                    </ng-container>
+                                    <ng-container *ngIf="!match.isPlaceholder">
+                                        <span class="text-xs font-bold text-violet-300 italic px-1">{{ match.away
+                                            }}</span>
+                                    </ng-container>
+                                </div>
+
+
+                            </div>
+                            <!-- Add match -->
+                            <button (click)="addMatchToRound(round)"
+                                class="w-full py-2 rounded-lg border border-dashed border-zinc-700 text-zinc-600 hover:border-violet-500/50 hover:text-violet-400 text-xs font-bold transition-all flex items-center justify-center gap-2 mb-4">
+                                + {{ 'COMMON.MATCH' | translate }}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+        </ng-container>
+
+
+
+        <!-- ADD PHASE column -->
+        <div class="flex-shrink-0 w-56 px-4 pt-3">
+            <button (click)="addPhase()"
+                class="w-full px-4 py-2.5 rounded-lg border border-dashed border-zinc-700 text-zinc-400 hover:border-gold-400/40 hover:text-gold-400 text-sm font-bold transition-all flex items-center justify-center gap-2 mb-4">
+                {{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_PHASE' | translate }}
+            </button>
+            <p class="text-xs text-zinc-600 leading-relaxed">{{ 'TOURNAMENT_DASHBOARD.FORMAT.ADD_PHASE_HINT' | translate }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Group Phase Only                                       -->
+<!-- ============================================================ -->
+<div *ngIf="activeModal === 'group'" class="modal modal-open bg-black/80 backdrop-blur-sm z-50">
+    <div class="modal-box bg-zinc-900 border border-black-border shadow-2xl rounded-2xl p-8 max-w-lg w-full">
+        <div class="flex items-center gap-3 mb-6">
+            <div
+                class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+            </div>
+            <h3 class="font-bold text-xl text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.GROUP_ONLY' | translate }}</h3>
+        </div>
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_GROUPS_COUNT' | translate }}</label>
+                <input type="number" min="1" [(ngModel)]="groupOnly_numGroups"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TEAMS_PER_GROUP' | translate }}</label>
+                <input type="number" min="2" [(ngModel)]="groupOnly_teamsPerGroup"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div>
+                <label
+                    class="flex items-center justify-between bg-white/5 border border-zinc-800 rounded-lg px-4 py-3 cursor-pointer hover:border-zinc-700 transition-all">
+                    <div>
+                        <span class="text-sm font-bold text-white block">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_HOME_AWAY' | translate }}</span>
+                        <span class="text-xs text-zinc-500">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_HOME_AWAY_DESC' | translate }}</span>
+                    </div>
+                    <input type="checkbox" [(ngModel)]="groupOnly_homeAway" class="toggle toggle-warning" />
+                </label>
+            </div>
+            <div class="bg-black/30 border border-zinc-800 rounded-xl p-4">
+                <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-3">{{ 'TOURNAMENT_DASHBOARD.FORMAT.PREVIEW' | translate }}</p>
+                <div class="flex flex-wrap gap-2">
+                    <span *ngFor="let g of [].constructor(groupOnly_numGroups); let i = index"
+                        class="px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold">
+                        Group {{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] }}
+                    </span>
+                </div>
+                <p class="text-xs text-zinc-500 mt-3">
+                    {{ 'TOURNAMENT_DASHBOARD.FORMAT.TOTAL_MATCHES' | translate }} <span class="text-white font-bold">{{ groupOnly_numGroups * (groupOnly_teamsPerGroup
+                        * (groupOnly_teamsPerGroup - 1) / 2) * (groupOnly_homeAway ? 2 : 1) }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="modal-action mt-8 flex gap-3">
+            <button (click)="closeModal()"
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+            <button (click)="applyGroupOnly()" [disabled]="groupOnly_numGroups < 1 || groupOnly_teamsPerGroup < 2"
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Groups + Knockout                                      -->
+<!-- ============================================================ -->
+<div *ngIf="activeModal === 'group_knockout'" class="modal modal-open bg-black/80 backdrop-blur-sm z-50">
+    <div class="modal-box bg-zinc-900 border border-black-border shadow-2xl rounded-2xl p-8 max-w-lg w-full">
+        <div class="flex items-center gap-3 mb-6">
+            <div
+                class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </div>
+            <h3 class="font-bold text-xl text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_GK_TITLE' | translate }}</h3>
+        </div>
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_GROUPS_COUNT' | translate }}</label>
+                <input type="number" min="1" [(ngModel)]="gk_numGroups"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TEAMS_PER_GROUP' | translate }}</label>
+                <input type="number" min="2" [(ngModel)]="gk_teamsPerGroup"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_ADVANCING_TEAMS' | translate }}</label>
+                <select [(ngModel)]="gk_advancingTeams"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none appearance-none">
+                    <option *ngFor="let option of gk_advancingOptions" [value]="option">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_ADVANCING_OPTION' | translate:{count: option} }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-action mt-8 flex gap-3">
+            <button (click)="closeModal()"
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+            <button (click)="applyGroupKnockout()" [disabled]="gk_numGroups < 1 || gk_teamsPerGroup < 2"
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Knockout Only                                          -->
+<!-- ============================================================ -->
+<div *ngIf="activeModal === 'knockout'" class="modal modal-open bg-black/80 backdrop-blur-sm z-50">
+    <div class="modal-box bg-zinc-900 border border-black-border shadow-2xl rounded-2xl p-8 max-w-lg w-full">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <h3 class="font-bold text-xl text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_KO_ONLY_TITLE' | translate }}</h3>
+        </div>
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TOTAL_TEAMS' | translate }}</label>
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <button *ngFor="let n of [4, 8, 16, 32, 64]" (click)="knockout_totalTeams = n"
+                        class="px-4 py-2 rounded-lg border text-sm font-bold transition-all"
+                        [ngClass]="knockout_totalTeams === n ? 'bg-gold-400 text-black border-gold-400' : 'bg-white/5 text-zinc-400 border-zinc-700 hover:border-gold-400/40'">
+                        {{ n }}
+                    </button>
+                </div>
+                <input type="number" min="2" [(ngModel)]="knockout_totalTeams"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div class="bg-black/30 border border-zinc-800 rounded-xl p-4">
+                <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-3">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_BRACKET_STRUCTURE' | translate }}</p>
+                <div class="flex flex-col gap-2">
+                    <div *ngFor="let round of knockout_roundNames; let i = index" class="flex items-center gap-3">
+                        <div
+                            class="w-5 h-5 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                            <span class="text-[9px] font-black text-rose-400">{{ knockout_roundNames.length - i
+                                }}</span>
+                        </div>
+                        <span class="text-sm text-white font-bold">{{ round }}</span>
+                        <span class="ml-auto text-xs text-zinc-600">{{ matchesInRound(knockout_totalTeams, i) }} match{{
+                            matchesInRound(knockout_totalTeams, i) === 1 ? '' : 'es' }}</span>
+                    </div>
+                </div>
+                <p class="text-xs text-zinc-500 mt-3">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TOTAL' | translate }} <span class="text-white font-bold">{{ knockout_totalTeams -
+                        1 }}</span> matches</p>
+            </div>
+        </div>
+        <div class="modal-action mt-8 flex gap-3">
+            <button (click)="closeModal()"
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+            <button (click)="applyKnockoutOnly()" [disabled]="knockout_totalTeams < 2"
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Custom Group                                          -->
+<!-- ============================================================ -->
+<div *ngIf="activeModal === 'custom_group'" class="modal modal-open bg-black/80 backdrop-blur-sm z-50">
+    <div class="modal-box bg-zinc-900 border border-black-border shadow-2xl rounded-2xl p-8 max-w-lg w-full">
+        <div class="flex items-center gap-3 mb-6">
+            <div
+                class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </div>
+            <h3 class="font-bold text-xl text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_CREATE_GROUP' | translate }}</h3>
+        </div>
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_NUMBER_TEAMS' | translate }}</label>
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <button *ngFor="let n of [4, 6, 8, 10, 12, 16]" (click)="customGroup_numTeams = n"
+                        class="px-4 py-2 rounded-lg border text-sm font-bold transition-all"
+                        [ngClass]="customGroup_numTeams === n ? 'bg-gold-400 text-black border-gold-400' : 'bg-white/5 text-zinc-400 border-zinc-700 hover:border-gold-400/40'">
+                        {{ n }}
+                    </button>
+                </div>
+                <input type="number" min="2" [(ngModel)]="customGroup_numTeams"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_NUMBER_ENCOUNTERS' | translate }}</label>
+                <p class="text-xs text-zinc-500 mb-3 block">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_ENCOUNTERS_DESC' | translate }}</p>
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <button *ngFor="let n of [1, 2, 3, 4]" (click)="customGroup_encounters = n"
+                        class="px-4 py-2 rounded-lg border text-sm font-bold transition-all"
+                        [ngClass]="customGroup_encounters === n ? 'bg-gold-400 text-black border-gold-400' : 'bg-white/5 text-zinc-400 border-zinc-700 hover:border-gold-400/40'">
+                        {{ n }} {{ (n > 1 ? 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TIMES' : 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TIME') | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-action mt-8 flex gap-3">
+            <button (click)="closeModal()"
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+            <button (click)="applyCustomGroup()" [disabled]="customGroup_numTeams < 2"
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE
+                MODULE</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: Custom Knockout                                       -->
+<!-- ============================================================ -->
+<div *ngIf="activeModal === 'custom_knockout'" class="modal modal-open bg-black/80 backdrop-blur-sm z-50">
+    <div class="modal-box bg-zinc-900 border border-black-border shadow-2xl rounded-2xl p-8 max-w-lg w-full">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <h3 class="font-bold text-xl text-white">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_CREATE_BRACKET' | translate }}</h3>
+        </div>
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">Total number of teams</label>
+                <div class="flex gap-2 flex-wrap mb-3">
+                    <button *ngFor="let n of [4, 8, 16, 32, 64]" (click)="customKnockout_numTeams = n"
+                        class="px-4 py-2 rounded-lg border text-sm font-bold transition-all"
+                        [ngClass]="customKnockout_numTeams === n ? 'bg-gold-400 text-black border-gold-400' : 'bg-white/5 text-zinc-400 border-zinc-700 hover:border-gold-400/40'">
+                        {{ n }}
+                    </button>
+                </div>
+                <input type="number" min="2" [(ngModel)]="customKnockout_numTeams"
+                    class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
+            </div>
+            <div class="bg-black/30 border border-zinc-800 rounded-xl p-4">
+                <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-3">Bracket Structure</p>
+                <div class="flex flex-col gap-2">
+                    <div *ngFor="let round of customKnockout_roundNamesArray; let i = index"
+                        class="flex items-center gap-3">
+                        <div
+                            class="w-5 h-5 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                            <span class="text-[9px] font-black text-rose-400">{{ customKnockout_roundNamesArray.length -
+                                i }}</span>
+                        </div>
+                        <span class="text-sm text-white font-bold">{{ round }}</span>
+                        <span class="ml-auto text-xs text-zinc-600">{{ matchesInRound(customKnockout_numTeams, i) }}
+                            match{{ matchesInRound(customKnockout_numTeams, i) === 1 ? '' : 'es' }}</span>
+                    </div>
+                </div>
+                <p class="text-xs text-zinc-500 mt-3">Total: <span class="text-white font-bold">{{
+                        customKnockout_numTeams - 1 }}</span> matches</p>
+            </div>
+        </div>
+        <div class="modal-action mt-8 flex gap-3">
+            <button (click)="closeModal()"
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+            <button (click)="applyCustomKnockout()" [disabled]="customKnockout_numTeams < 2"
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE
+                MODULE</button>
         </div>
     </div>
 </div>

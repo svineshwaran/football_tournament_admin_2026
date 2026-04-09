@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -23,7 +23,7 @@ interface TournamentTeam {
 @Component({
     selector: 'app-tournament-teams',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TranslateModule],
     templateUrl: './tournament-teams.component.html',
     styleUrls: []
 })
@@ -31,14 +31,15 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
     @Input() tournamentId!: string;
 
     private http = inject(HttpClient);
+    public ui = inject(UiService);
+    private translate = inject(TranslateService);
 
     teams = signal<TournamentTeam[]>([]);
     availableTeams = signal<Team[]>([]); // Teams not in this tournament
     isLoading = signal(true);
     isModalOpen = signal(false);
-    isSaving = signal(false);
     modalMode = signal<'new' | 'existing'>('existing');
-    selectedExistingTeamId = signal<string>('');
+    selectedExistingTeamIds = signal<string[]>([]);
 
     newTeam = signal<Partial<Team>>({
         name: '',
@@ -46,6 +47,31 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         teamType: 'Club',
         city: '',
         logoUrl: ''
+    });
+
+    // Data Table State
+    searchQuery = signal('');
+    columns = signal([
+        { key: 'team', label: 'TOURNAMENT_DASHBOARD.TEAMS.TABLE.TEAM', visible: true },
+        { key: 'type', label: 'TOURNAMENT_DASHBOARD.TEAMS.TABLE.TYPE', visible: true },
+        { key: 'location', label: 'TOURNAMENT_DASHBOARD.TEAMS.TABLE.LOCATION', visible: true },
+        { key: 'status', label: 'TOURNAMENT_DASHBOARD.TEAMS.TABLE.STATUS', visible: true },
+        { key: 'payment', label: 'TOURNAMENT_DASHBOARD.TEAMS.TABLE.PAYMENT', visible: true },
+        { key: 'actions', label: 'TOURNAMENT_DASHBOARD.TEAMS.TABLE.ACTIONS', visible: true }
+    ]);
+
+    // Computed filtered list
+    filteredTeams = computed(() => {
+        const query = this.searchQuery().toLowerCase().trim();
+        const currentTeams = this.teams();
+        if (!query) return currentTeams;
+
+        return currentTeams.filter(reg => {
+            const team = reg.team;
+            return team.name.toLowerCase().includes(query) ||
+                (team.shortName && team.shortName.toLowerCase().includes(query)) ||
+                (team.city && team.city.toLowerCase().includes(query));
+        });
     });
 
     ngOnInit() {
@@ -100,7 +126,7 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
             city: '',
             logoUrl: ''
         });
-        this.selectedExistingTeamId.set('');
+        this.selectedExistingTeamIds.set([]);
         this.isModalOpen.set(true);
     }
 
@@ -112,25 +138,40 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         this.modalMode.set(mode);
     }
 
+    toggleExistingTeamSelection(teamId: string) {
+        this.selectedExistingTeamIds.update(ids => {
+            if (ids.includes(teamId)) {
+                return ids.filter(id => id !== teamId);
+            } else {
+                return [...ids, teamId];
+            }
+        });
+    }
+
     saveTeam() {
         if (this.modalMode() === 'existing') {
-            const teamId = this.selectedExistingTeamId();
-            if (!teamId) return;
+            const teamIds = this.selectedExistingTeamIds();
+            if (!teamIds || teamIds.length === 0) return;
 
-            this.isSaving.set(true);
-            this.http.post<{ success: boolean, data: TournamentTeam }>(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams/${teamId}`, {})
+            this.ui.startAction();
+            this.http.post<{ success: boolean, data: TournamentTeam[] }>(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/bulk`, { teamIds })
                 .subscribe({
                     next: (res) => {
-                        this.teams.update(t => [res.data, ...t]);
-                        // Remove assigned team from available list
-                        this.availableTeams.update(av => av.filter(a => a.id !== teamId));
+                        const newRegistrations = res.data || [];
+                        this.teams.update(t => [...newRegistrations, ...t]);
 
-                        this.isSaving.set(false);
+                        // Remove assigned teams from available list
+                        const addedSet = new Set(teamIds);
+                        this.availableTeams.update(av => av.filter(a => !addedSet.has(a.id)));
+
+                        this.ui.endAction();
+                        this.showToast('TOURNAMENT_DASHBOARD.TOAST.ADD_TEAMS_SUCCESS', 'success');
                         this.closeModal();
                     },
                     error: (err) => {
-                        console.error('Error assigning team:', err);
-                        this.isSaving.set(false);
+                        console.error('Error assigning teams:', err);
+                        this.ui.endAction();
+                        this.showToast('TOURNAMENT_DASHBOARD.TOAST.ADD_TEAMS_ERROR', 'error');
                     }
                 });
         } else {
@@ -141,37 +182,49 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
             this.http.post<Team>(`${API_URL}/api/teams`, teamData).subscribe({
                 next: (newTeam) => {
                     // Step 2: Now map it to the tournament
-                    this.http.post<{ success: boolean, data: TournamentTeam }>(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams/${newTeam.id}`, {})
+                    this.http.post<{ success: boolean, data: TournamentTeam }>(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/${newTeam.id}`, {})
                         .subscribe({
                             next: (res) => {
                                 this.teams.update(t => [res.data, ...t]);
-                                this.isSaving.set(false);
+                                this.ui.endAction();
+                                this.showToast('TOURNAMENT_DASHBOARD.TOAST.CREATE_TEAM_SUCCESS', 'success');
                                 this.closeModal();
                             },
                             error: (err) => {
                                 console.error('Error mapping new team to tournament:', err);
-                                this.isSaving.set(false);
+                                this.ui.endAction();
+                                this.showToast('TOURNAMENT_DASHBOARD.TOAST.MAPPING_ERROR', 'error');
                             }
                         });
                 },
                 error: (err) => {
                     console.error('Error saving team:', err);
-                    this.isSaving.set(false);
+                    this.ui.endAction();
+                    this.showToast('TOURNAMENT_DASHBOARD.TOAST.CREATE_TEAM_ERROR', 'error');
                 }
             });
         }
     }
 
     deleteTeam(regId: string, teamId: string) {
-        if (confirm('Are you sure you want to remove this team from the tournament?')) {
-            // Delete the registration link
-            this.http.delete(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams/${teamId}`).subscribe({
-                next: () => {
-                    this.fetchTeams(); // Refetch to update both lists
-                },
-                error: (err) => console.error('Error unassigning team:', err)
-            });
-        }
+        this.translate.get('TOURNAMENT_DASHBOARD.TEAMS.CONFIRM_REMOVE').subscribe(confirmMsg => {
+            if (confirm(confirmMsg)) {
+                this.ui.startAction();
+                // Delete the registration link
+                this.http.delete(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/${teamId}`).subscribe({
+                    next: () => {
+                        this.showToast('TOURNAMENT_DASHBOARD.TOAST.REMOVE_TEAM_SUCCESS', 'success');
+                        this.fetchTeams(); // Refetch to update both lists
+                        this.ui.endAction();
+                    },
+                    error: (err) => {
+                        console.error('Error unassigning team:', err);
+                        this.showToast('TOURNAMENT_DASHBOARD.TOAST.REMOVE_TEAM_ERROR', 'error');
+                        this.ui.endAction();
+                    }
+                });
+            }
+        });
     }
 
     toggleApprovalStatus(reg: TournamentTeam) {
@@ -180,10 +233,19 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         const oldStatus = reg.status;
         reg.status = newStatus;
 
-        this.http.put(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams/${reg.team.id}/status`, { status: newStatus }).subscribe({
+        this.ui.startAction();
+        this.http.put(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/${reg.team.id}/status`, { status: newStatus }).subscribe({
+            next: () => {
+                this.ui.endAction();
+                this.translate.get('TOURNAMENT_DASHBOARD.TEAMS.STATUS_UPDATED', { status: newStatus }).subscribe(msg => {
+                    this.ui.showToast(msg, 'success');
+                });
+            },
             error: (err) => {
                 console.error('Error updating approval status:', err);
                 reg.status = oldStatus; // Revert on error
+                this.ui.endAction();
+                this.showToast('TOURNAMENT_DASHBOARD.TOAST.SAVE_ERROR', 'error');
             }
         });
     }
@@ -194,10 +256,19 @@ export class TournamentTeamsComponent implements OnInit, OnChanges {
         const oldPaymentStatus = reg.paymentStatus;
         reg.paymentStatus = newPaymentStatus;
 
-        this.http.put(`http://localhost:3000/api/tournaments/${this.tournamentId}/teams/${reg.team.id}/status`, { paymentStatus: newPaymentStatus }).subscribe({
+        this.ui.startAction();
+        this.http.put(`${environment.apiBaseUrl}/api/tournaments/${this.tournamentId}/teams/${reg.team.id}/status`, { paymentStatus: newPaymentStatus }).subscribe({
+            next: () => {
+                this.ui.endAction();
+                this.translate.get('TOURNAMENT_DASHBOARD.TEAMS.PAYMENT_UPDATED', { status: newPaymentStatus }).subscribe(msg => {
+                    this.ui.showToast(msg, 'success');
+                });
+            },
             error: (err) => {
                 console.error('Error updating payment status:', err);
                 reg.paymentStatus = oldPaymentStatus; // Revert on error
+                this.ui.endAction();
+                this.showToast('TOURNAMENT_DASHBOARD.TOAST.SAVE_ERROR', 'error');
             }
         });
     }

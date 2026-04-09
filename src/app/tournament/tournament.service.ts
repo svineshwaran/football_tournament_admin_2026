@@ -27,6 +27,7 @@ export interface TournamentDTO {
     playerLimit?: number;
     squadSize?: number;
     settings?: any;
+    format?: any;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -68,5 +69,54 @@ export class TournamentService {
 
     delete(id: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    }
+
+    generateStructure(id: string, scheduleConfig?: any): Observable<any> {
+        return this.http.post<ApiResponse<any>>(`${this.baseUrl}/${id}/generate-structure`, scheduleConfig || {}).pipe(
+            map(res => res.data)
+        );
+    }
+
+    getStructure(id: string): Observable<any> {
+        return this.http.get<ApiResponse<any>>(`${this.baseUrl}/${id}/structure`).pipe(
+            map(res => res.data)
+        );
+    }
+
+    updateMatchSchedule(matchId: number | string, payload: any): Observable<any> {
+        return this.http.patch<ApiResponse<any>>(`${environment.apiBaseUrl}/api/matches/${matchId}/schedule`, payload);
+    }
+
+    // Match Center & Event Management
+    getMatchesByStatus(status: string, tournamentId?: string): Observable<any[]> {
+        let url = `${environment.apiBaseUrl}/api/matches?status=${status}`;
+        if (tournamentId) url += `&tournamentId=${tournamentId}`;
+        return this.http.get<ApiResponse<any[]>>(url).pipe(
+            map(res => res.data)
+        );
+    }
+
+    getMatchEvents(matchId: number | string): Observable<any[]> {
+        return this.http.get<ApiResponse<any[]>>(`${environment.apiBaseUrl}/api/matches/${matchId}/events`).pipe(
+            map(res => res.data)
+        );
+    }
+
+    addMatchEvent(matchId: number | string, eventData: any): Observable<any> {
+        return this.http.post<ApiResponse<any>>(`${environment.apiBaseUrl}/api/matches/${matchId}/events`, eventData).pipe(
+            map(res => res.data)
+        );
+    }
+
+    updateMatchEvent(matchId: number | string, eventId: string, eventData: any): Observable<any> {
+        return this.http.put<ApiResponse<any>>(`${environment.apiBaseUrl}/api/matches/${matchId}/events/${eventId}`, eventData).pipe(
+            map(res => res.data)
+        );
+    }
+
+    deleteMatchEvent(matchId: number | string, eventId: string): Observable<any> {
+        return this.http.delete<ApiResponse<any>>(`${environment.apiBaseUrl}/api/matches/${matchId}/events/${eventId}`).pipe(
+            map(res => res.data)
+        );
     }
 }

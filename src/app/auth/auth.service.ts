@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 import { API_URL } from '../core/config/app.config';
 
@@ -18,6 +19,19 @@ export class AuthService {
 
     get userEmail() {
         return this.userSignal()?.email;
+    }
+
+    get userRole(): string {
+        const u = this.userSignal();
+        return u?.role || u?.userRole?.name || 'user';
+    }
+
+    get isAdmin(): boolean {
+        return this.userSignal()?.roleId === 1;
+    }
+
+    get isOrganizer(): boolean {
+        return this.userRole?.toLowerCase() === 'organizer';
     }
 
     register(data: any) {
