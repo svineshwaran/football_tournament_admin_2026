@@ -465,7 +465,7 @@
                 <div class="flex flex-wrap gap-2">
                     <span *ngFor="let g of [].constructor(groupOnly_numGroups); let i = index"
                         class="px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold">
-                        Group {{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] }}
+                        {{ 'TOURNAMENT_DASHBOARD.FORMAT.BOARD.GROUP' | translate }} {{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i] }}
                     </span>
                 </div>
                 <p class="text-xs text-zinc-500 mt-3">
@@ -476,9 +476,9 @@
         </div>
         <div class="modal-action mt-8 flex gap-3">
             <button (click)="closeModal()"
-                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">{{ 'COMMON.CANCEL' | translate | uppercase }}</button>
             <button (click)="applyGroupOnly()" [disabled]="groupOnly_numGroups < 1 || groupOnly_teamsPerGroup < 2"
-                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE</button>
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">{{ 'COMMON.CREATE' | translate | uppercase }}</button>
         </div>
     </div>
 </div>
@@ -519,9 +519,9 @@
         </div>
         <div class="modal-action mt-8 flex gap-3">
             <button (click)="closeModal()"
-                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">{{ 'COMMON.CANCEL' | translate | uppercase }}</button>
             <button (click)="applyGroupKnockout()" [disabled]="gk_numGroups < 1 || gk_teamsPerGroup < 2"
-                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE</button>
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">{{ 'COMMON.CREATE' | translate | uppercase }}</button>
         </div>
     </div>
 </div>
@@ -564,19 +564,18 @@
                                 }}</span>
                         </div>
                         <span class="text-sm text-white font-bold">{{ round }}</span>
-                        <span class="ml-auto text-xs text-zinc-600">{{ matchesInRound(knockout_totalTeams, i) }} match{{
-                            matchesInRound(knockout_totalTeams, i) === 1 ? '' : 'es' }}</span>
+                        <span class="ml-auto text-xs text-zinc-600">{{ matchesInRound(knockout_totalTeams, i) }} {{ matchesInRound(knockout_totalTeams, i) === 1 ? ('COMMON.MATCH_LOWER' | translate) : ('COMMON.MATCHES_LOWER' | translate) }}</span>
                     </div>
                 </div>
                 <p class="text-xs text-zinc-500 mt-3">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TOTAL' | translate }} <span class="text-white font-bold">{{ knockout_totalTeams -
-                        1 }}</span> matches</p>
+                        1 }}</span> {{ 'COMMON.MATCHES_LOWER' | translate }}</p>
             </div>
         </div>
         <div class="modal-action mt-8 flex gap-3">
             <button (click)="closeModal()"
-                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">{{ 'COMMON.CANCEL' | translate | uppercase }}</button>
             <button (click)="applyKnockoutOnly()" [disabled]="knockout_totalTeams < 2"
-                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE</button>
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">{{ 'COMMON.CREATE' | translate | uppercase }}</button>
         </div>
     </div>
 </div>
@@ -624,10 +623,9 @@
         </div>
         <div class="modal-action mt-8 flex gap-3">
             <button (click)="closeModal()"
-                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">{{ 'COMMON.CANCEL' | translate | uppercase }}</button>
             <button (click)="applyCustomGroup()" [disabled]="customGroup_numTeams < 2"
-                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE
-                MODULE</button>
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">{{ 'COMMON.CREATE_MODULE' | translate | uppercase }}</button>
         </div>
     </div>
 </div>
@@ -649,7 +647,7 @@
         </div>
         <div class="space-y-5">
             <div>
-                <label class="block text-sm font-bold text-zinc-300 mb-2">Total number of teams</label>
+                <label class="block text-sm font-bold text-zinc-300 mb-2">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TOTAL_TEAMS' | translate }}</label>
                 <div class="flex gap-2 flex-wrap mb-3">
                     <button *ngFor="let n of [4, 8, 16, 32, 64]" (click)="customKnockout_numTeams = n"
                         class="px-4 py-2 rounded-lg border text-sm font-bold transition-all"
@@ -661,7 +659,7 @@
                     class="w-full bg-black/50 border border-zinc-700 focus:border-gold-400 focus:ring-1 focus:ring-gold-400/50 rounded-lg px-4 py-3 text-white transition-all outline-none" />
             </div>
             <div class="bg-black/30 border border-zinc-800 rounded-xl p-4">
-                <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-3">Bracket Structure</p>
+                <p class="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-3">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_BRACKET_STRUCTURE' | translate }}</p>
                 <div class="flex flex-col gap-2">
                     <div *ngFor="let round of customKnockout_roundNamesArray; let i = index"
                         class="flex items-center gap-3">
@@ -672,19 +670,18 @@
                         </div>
                         <span class="text-sm text-white font-bold">{{ round }}</span>
                         <span class="ml-auto text-xs text-zinc-600">{{ matchesInRound(customKnockout_numTeams, i) }}
-                            match{{ matchesInRound(customKnockout_numTeams, i) === 1 ? '' : 'es' }}</span>
+                            {{ matchesInRound(customKnockout_numTeams, i) === 1 ? ('COMMON.MATCH_LOWER' | translate) : ('COMMON.MATCHES_LOWER' | translate) }}</span>
                     </div>
                 </div>
-                <p class="text-xs text-zinc-500 mt-3">Total: <span class="text-white font-bold">{{
-                        customKnockout_numTeams - 1 }}</span> matches</p>
+                <p class="text-xs text-zinc-500 mt-3">{{ 'TOURNAMENT_DASHBOARD.FORMAT.MODAL_TOTAL' | translate }} <span class="text-white font-bold">{{
+                        customKnockout_numTeams - 1 }}</span> {{ 'COMMON.MATCHES_LOWER' | translate }}</p>
             </div>
         </div>
         <div class="modal-action mt-8 flex gap-3">
             <button (click)="closeModal()"
-                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">CANCEL</button>
+                class="btn btn-ghost hover:bg-white/5 text-zinc-400 font-bold px-6">{{ 'COMMON.CANCEL' | translate | uppercase }}</button>
             <button (click)="applyCustomKnockout()" [disabled]="customKnockout_numTeams < 2"
-                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">CREATE
-                MODULE</button>
+                class="btn bg-gold-400 hover:bg-gold-500 text-black border-none font-bold px-8 shadow-[0_0_15px_rgba(212,175,55,0.3)] disabled:opacity-40">{{ 'COMMON.CREATE_MODULE' | translate | uppercase }}</button>
         </div>
     </div>
 </div>

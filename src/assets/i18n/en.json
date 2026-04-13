@@ -103,6 +103,12 @@
         "DONE": "Done",
         "CLOSE": "Close",
         "MATCH": "Match",
+        "MATCH_LOWER": "match",
+        "MATCHES_LOWER": "matches",
+        "TEAMS": "Teams",
+        "TEAMS_MINIMUM": "Teams Minimum",
+        "FORMAT": "Format",
+        "CREATE_MODULE": "Create Module",
         "EMPTY_SLOT": "Empty Slot",
         "CORNER": "Corner",
         "FOUL": "Foul",
@@ -155,6 +161,13 @@
         },
         "CREATE_TOURNAMENT": "Create Tournament",
         "MODAL": {
+            "FORMAT": "Format",
+            "FORMATS": {
+                "GROUP": "Group Phase",
+                "GROUP_KNOCKOUT": "Groups + Knockout",
+                "KNOCKOUT": "Knockout Only",
+                "CUSTOM": "Custom Format"
+            },
             "TITLE": "Create Tournament",
             "NAME": "Tournament Name",
             "NAME_PLACEHOLDER": "e.g. Champions League 2026",
@@ -475,7 +488,9 @@
         "SCORERS": {
             "TITLE": "Golden Boot Race",
             "SUBTITLE": "Top Goal Scorers",
-            "VIEW_ALL": "View All Tournaments"
+            "VIEW_ALL": "View All Tournaments",
+            "EMPTY_TITLE": "No goals scored yet",
+            "EMPTY_DESC": "The race starts once matches are played"
         },
         "ADMIN_PANEL": {
             "TITLE": "Admin Quick Actions",
@@ -696,7 +711,26 @@
             "PENALTIES_SHOOTOUT": "Penalty Shootout",
             "SIZE_3": "Size 3",
             "SIZE_4": "Size 4",
-            "SIZE_5": "Size 5"
+            "SIZE_5": "Size 5",
+            "GOVERNING_BODY": "Governing Body",
+            "DISCIPLINE_TIE_TITLE": "Discipline & Tie-Breakers",
+            "EXTRA_TIME_RULES": "Extra Time Rule"
+        },
+        "STATUS": {
+            "DRAFT": "Draft",
+            "REGISTRATION_OPEN": "Registration Open",
+            "IN_PROGRESS": "In Progress",
+            "COMPLETED": "Completed",
+            "LIVE": "Live",
+            "UPCOMING": "Upcoming",
+            "PAST": "Past",
+            "ARCHIVED": "Archived",
+            "STARTING_SOON": "Starting Soon",
+            "SCHEDULED": "Scheduled",
+            "CANCELLED": "Cancelled",
+            "APPROVED": "Approved",
+            "PENDING": "Pending",
+            "REJECTED": "Rejected"
         },
         "FINANCE_SETTINGS": {
             "TITLE": "Finance & Rewards",
@@ -822,6 +856,7 @@
             "MARK_AS_UNPAID": "Mark as Unpaid",
             "MARK_AS_PAID": "Mark as Paid",
             "MAPPING_HINT": "This team will be explicitly mapped to this tournament.",
+            "QUICK_ACTIONS": "Quick Actions",
             "ADD_SELECTED_TEAMS": "Add Selected Teams",
             "ADD_SELECTED_TEAM": "Add Selected Team",
             "CREATE_MAP_TEAM": "Create & Map Team"
@@ -916,7 +951,10 @@
                 "GROUP": "Group",
                 "BRACKET": "Bracket",
                 "SINGLE_MATCH": "Final/Match"
-            }
+            },
+            "REMOVE_PHASE": "Remove Phase",
+            "ADD_PHASE": "+ Add Phase",
+            "ADD_PHASE_HINT": "Add phases to build your custom tournament format."
         },
         "TOAST": {
             "SAVE_SUCCESS": "Changes saved successfully!",
@@ -933,6 +971,35 @@
             "REMOVE_TEAM_ERROR": "Failed to remove team.",
             "MATCH_UPDATE_SUCCESS": "Match schedule updated successfully!",
             "MATCH_UPDATE_ERROR": "Failed to update match schedule."
+        },
+        "SPONSORS": {
+            "TITLE": "Tournament Sponsors",
+            "SUBTITLE": "Manage sponsors and partners specifically for this tournament.",
+            "ASSIGN_BTN": "Assign Sponsor",
+            "TABLE": {
+                "LOGO": "Logo",
+                "NAME": "Sponsor Name",
+                "TYPE": "Type",
+                "ASSIGNED_AT": "Assigned At",
+                "ACTIONS": "Actions"
+            },
+            "EMPTY_TITLE": "No sponsors assigned to this tournament.",
+            "EMPTY_HINT": "Click 'Assign Sponsor' to get started",
+            "REMOVE_TITLE": "Remove from tournament",
+            "MODAL_TITLE": "Assign Sponsor",
+            "MODAL_SUBTITLE": "Select an active sponsor to partner with this tournament.",
+            "SELECT_LABEL": "Select Sponsor",
+            "SELECT_PLACEHOLDER": "Choose a sponsor...",
+            "NO_AVAILABLE": "No more active sponsors available to assign.",
+            "CANCEL": "Cancel",
+            "ASSIGNING": "Assigning...",
+            "ASSIGN": "Assign",
+            "CONFIRM_REMOVE_TITLE": "Remove Sponsor",
+            "CONFIRM_REMOVE_MSG": "Are you sure you want to remove this sponsor from the tournament? This will not delete the sponsor globally.",
+            "REMOVE_SUCCESS": "Sponsor removed from tournament.",
+            "REMOVE_ERROR": "Failed to remove sponsor.",
+            "ASSIGN_SUCCESS": "Sponsor assigned successfully!",
+            "ASSIGN_ERROR": "Failed to assign sponsor."
         }
     },
     "MATCH_DETAILS": {

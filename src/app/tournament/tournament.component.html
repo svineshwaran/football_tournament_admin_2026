@@ -106,7 +106,7 @@
                     class="w-5 h-5 rounded-full bg-gold-400 text-black flex items-center justify-center text-[10px] font-bold">
                     {{ activeFilterCount }}
                 </span>
-                Clear
+                {{ 'TOURNAMENTS.CLEAR' | translate }}
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -225,7 +225,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
-                                {{ tournament.maxTeams || 0 }} Teams
+                                {{ tournament.maxTeams || 0 }} {{ 'COMMON.TEAMS' | translate }}
                             </div>
                         </div>
                         <div>
@@ -238,7 +238,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                TBA
+                                {{ 'COMMON.TBD' | translate }}
                             </div>
                         </div>
                         <div>
@@ -253,7 +253,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
-                                N/A
+                                {{ 'COMMON.NA' | translate }}
                             </div>
                         </div>
                     </div>
@@ -363,19 +363,19 @@
             <!-- Format & Min Teams Row -->
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Format</label>
+                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">{{ 'COMMON.FORMAT' | translate }}</label>
                     <select [(ngModel)]="newTournament.type" (change)="onFormatChange()"
                         class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/50 transition-all">
-                        <option value="group" class="bg-black-card">Group Phase</option>
-                        <option value="group_knockout" class="bg-black-card">Groups + Knockout</option>
-                        <option value="knockout" class="bg-black-card">Knockout Only</option>
-                        <option value="custom" class="bg-black-card">Custom Format</option>
+                        <option value="group" class="bg-black-card">{{ 'DASHBOARD.MODAL.FORMATS.GROUP' | translate }}</option>
+                        <option value="group_knockout" class="bg-black-card">{{ 'DASHBOARD.MODAL.FORMATS.GROUP_KNOCKOUT' | translate }}</option>
+                        <option value="knockout" class="bg-black-card">{{ 'DASHBOARD.MODAL.FORMATS.KNOCKOUT' | translate }}</option>
+                        <option value="custom" class="bg-black-card">{{ 'DASHBOARD.MODAL.FORMATS.CUSTOM' | translate }}</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">Min Teams</label>
+                    <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">{{ 'TOURNAMENT_DASHBOARD.PARTICIPANTS.MIN_TEAMS' | translate }}</label>
                     <div class="w-full bg-white/10 border border-white/5 rounded-lg px-4 py-3 text-zinc-400 transition-all flex items-center justify-between cursor-not-allowed">
-                        <span>{{ newTournament.minTeams }} Teams Minimum</span>
+                        <span>{{ newTournament.minTeams }} {{ 'COMMON.TEAMS_MINIMUM' | translate }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
                 </div>
@@ -388,13 +388,13 @@
                         'DASHBOARD.MODAL.MAX_TEAMS' | translate }}</label>
                     <select [(ngModel)]="newTournament.maxTeams"
                         class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/50 transition-all">
-                        <option value="4" class="bg-black-card">4 Teams</option>
-                        <option value="8" class="bg-black-card">8 Teams</option>
-                        <option value="16" class="bg-black-card">16 Teams</option>
-                        <option value="24" class="bg-black-card">24 Teams</option>
-                        <option value="32" class="bg-black-card">32 Teams</option>
-                        <option value="48" class="bg-black-card">48 Teams</option>
-                        <option value="64" class="bg-black-card">64 Teams</option>
+                        <option value="4" class="bg-black-card">4 {{ 'COMMON.TEAMS' | translate }}</option>
+                        <option value="8" class="bg-black-card">8 {{ 'COMMON.TEAMS' | translate }}</option>
+                        <option value="16" class="bg-black-card">16 {{ 'COMMON.TEAMS' | translate }}</option>
+                        <option value="24" class="bg-black-card">24 {{ 'COMMON.TEAMS' | translate }}</option>
+                        <option value="32" class="bg-black-card">32 {{ 'COMMON.TEAMS' | translate }}</option>
+                        <option value="48" class="bg-black-card">48 {{ 'COMMON.TEAMS' | translate }}</option>
+                        <option value="64" class="bg-black-card">64 {{ 'COMMON.TEAMS' | translate }}</option>
                     </select>
                 </div>
                 <div>
