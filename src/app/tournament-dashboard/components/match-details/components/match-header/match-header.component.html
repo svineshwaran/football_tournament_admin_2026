@@ -16,9 +16,9 @@
                     </span>
                     <span *ngIf="match?.tournament?.format?.format_type"
                         class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-white/5 text-zinc-400 border border-white/10">
-                        {{ match?.tournament?.format?.format_type === 'groups' ? 'League/Groups' : 
-                           match?.tournament?.format?.format_type === 'knockout' ? 'Knockout' : 
-                           match?.tournament?.format?.format_type === 'groups_knockout' ? 'Groups + KO' : 
+                        {{ match?.tournament?.format?.format_type === 'groups' ? ('TOURNAMENT_DASHBOARD.FORMAT.TYPE_GROUP' | translate) : 
+                           match?.tournament?.format?.format_type === 'knockout' ? ('TOURNAMENT_DASHBOARD.FORMAT.TYPE_KNOCKOUT' | translate) : 
+                           match?.tournament?.format?.format_type === 'groups_knockout' ? ('TOURNAMENT_DASHBOARD.FORMAT.TYPE_GROUP_KNOCKOUT' | translate) : 
                            match.tournament.format.format_type }}
                     </span>
                     <span *ngIf="match?.status === 'scheduled'"
@@ -38,7 +38,7 @@
 
             <div class="flex flex-wrap items-center gap-2">
 
-                <button (click)="addLineup.emit()"
+                <button *ngIf="match?.status !== 'completed'" (click)="addLineup.emit()"
                     class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-colors flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -122,7 +122,7 @@
                 <div>
                     <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">{{ 'MATCH_DETAILS.HEADER.DATE_TIME' | translate }}</p>
                     <p class="text-sm font-bold text-white">{{ match?.startTime ? (match.startTime | date:'medium') :
-                        'TBD' }}</p>
+                        ('COMMON.TBD' | translate) }}</p>
                 </div>
             </div>
 

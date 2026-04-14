@@ -56,7 +56,7 @@
                         ('MATCH_DETAILS.INFO.TITLE' | translate)}}</span>
 
                     <div class="flex-1 flex justify-end items-center gap-2">
-                        <span class="text-sm font-bold text-white">{{match.homeTeam?.name || 'TBD'}}</span>
+                        <span class="text-sm font-bold text-white">{{match.homeTeam?.name || ('COMMON.TBD' | translate)}}</span>
                     </div>
                     <div
                         class="bg-zinc-900 border border-zinc-800 px-3 py-1 rounded text-sm font-black text-white w-16 text-center shrink-0 shadow-inner">
@@ -69,7 +69,7 @@
                         <span *ngIf="match.awayScore === undefined || match.homeScore === null">-</span>
                     </div>
                     <div class="flex-1 flex justify-start items-center gap-2">
-                        <span class="text-sm font-bold text-white">{{match.awayTeam?.name || 'TBD'}}</span>
+                        <span class="text-sm font-bold text-white">{{match.awayTeam?.name || ('COMMON.TBD' | translate)}}</span>
                     </div>
 
                     <div class="ml-4 flex items-center gap-2">
