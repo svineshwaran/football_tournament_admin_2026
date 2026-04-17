@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:3000' // Using localhost as placeholder for now
+    apiUrl: 'https://api.footballtournament.in' // Using localhost as placeholder for now
 };

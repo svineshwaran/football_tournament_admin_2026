@@ -115,12 +115,86 @@ gsap.registerPlugin(ScrollTrigger);
                  [style.animation-duration.s]="p.duration">
             </div>
           </div>
+
+          <!-- Football Animated Elements -->
+          <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <div *ngFor="let icon of footballIcons" 
+                 class="football-element absolute opacity-[0.07] blur-[1px] text-[#D4AF37] hover:opacity-30 transition-opacity duration-700"
+                 [style.left.%]="icon.x"
+                 [style.top.%]="icon.y"
+                 [style.width.px]="icon.size"
+                 [style.height.px]="icon.size"
+                 [style.transform]="'rotate(' + icon.rotation + 'deg)'">
+               <div [innerHTML]="getIconSvg(icon.type)" class="w-full h-full"></div>
+            </div>
+
+            <!-- Tactical Sketches -->
+            <div class="absolute left-[3%] bottom-[15%] w-[350px] h-[250px] opacity-[0.04] rotate-[-8deg] border-2 border-dashed border-[#D4AF37] rounded-3xl p-6 hidden lg:block">
+              <div class="relative w-full h-full">
+                <!-- Half Field Line -->
+                <div class="absolute left-0 right-0 top-1/2 h-0.5 bg-[#D4AF37]"></div>
+                <!-- Penalty Area -->
+                <div class="absolute left-1/4 right-1/4 top-0 h-1/4 border-2 border-[#D4AF37] rounded-b-xl border-t-0"></div>
+                <!-- Play Arrow -->
+                <svg class="absolute top-1/3 left-1/4 w-32 h-32 text-[#D4AF37]" viewBox="0 0 100 100">
+                  <path d="M10 80 C 10 30, 80 30, 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8 6"></path>
+                  <polygon points="80 80, 72 75, 76 84" fill="currentColor"></polygon>
+                </svg>
+                <!-- X and O marks -->
+                <div class="absolute top-1/4 left-1/3 text-2xl font-black text-[#D4AF37]">X</div>
+                <div class="absolute top-1/2 left-2/3 text-2xl font-black text-[#D4AF37]">O</div>
+              </div>
+            </div>
+
+            <div class="absolute right-[3%] top-[20%] w-[300px] h-[200px] opacity-[0.04] rotate-[12deg] border-2 border-dashed border-[#D4AF37] rounded-3xl p-6 hidden lg:block">
+               <div class="relative w-full h-full">
+                <div class="absolute top-1/4 left-1/4 w-4 h-4 rounded-full border-2 border-[#D4AF37]"></div>
+                <div class="absolute top-1/2 right-1/4 w-4 h-4 rounded-full border-2 border-[#D4AF37]"></div>
+                <svg class="absolute top-1/4 right-1/4 w-32 h-32 text-[#D4AF37]" viewBox="0 0 100 100">
+                  <path d="M80 20 C 10 20, 10 80, 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8 6"></path>
+                  <polygon points="80 80, 72 75, 76 84" fill="currentColor"></polygon>
+                </svg>
+              </div>
+            </div>
+
+            <div class="action-player-left absolute -left-[6%] top-[8%] w-[680px] h-[680px] pointer-events-none z-0 hidden xl:block mix-blend-screen transition-transform duration-100 ease-out" id="parallax-left" style="-webkit-mask-image: radial-gradient(circle at 45% 50%, black 50%, transparent 100%);">
+              <img src="assets/images/hero-striker-pro.png" alt="" class="w-full h-full object-contain filter contrast-125 brightness-110 drop-shadow-[0_0_100px_rgba(212,175,55,0.4)]">
+            </div>
+            <div class="action-player-right absolute -right-[8%] top-[2%] w-[780px] h-[780px] pointer-events-none z-0 hidden xl:block mix-blend-screen transition-transform duration-100 ease-out" id="parallax-right" style="-webkit-mask-image: radial-gradient(circle at 55% 50%, black 50%, transparent 100%);">
+              <img src="assets/images/hero-goal-pro.png" alt="" class="w-full h-full object-contain filter contrast-125 brightness-110 drop-shadow-[0_0_120px_rgba(212,175,55,0.5)]">
+            </div>
+
+            <!-- Cinematic Atmospheric Fog -->
+            <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#0B0B0B] via-transparent to-transparent pointer-events-none z-10"></div>
+            
+            <!-- Lens Flare Effect -->
+            <div class="absolute top-[20%] left-[30%] w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-[150px] pointer-events-none animate-pulse"></div>
+
+            <!-- Custom Gold Embers -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none z-10">
+              <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]" 
+                   class="absolute w-1 h-1 bg-[#D4AF37] rounded-full gold-ember"
+                   [style.left.%]="(i * 7) % 100"
+                   [style.top.%]="(i * 13) % 100"
+                   [style.animation-delay.s]="i * 0.4"
+                   [style.opacity]="0.4">
+              </div>
+            </div>
+
+            <!-- Enhanced Glow Beams -->
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] pointer-events-none"></div>
+
+            <!-- Mockup Sparkles -->
+            <div class="absolute bottom-[20%] right-[8%] w-16 h-16 text-[#D4AF37] opacity-40 animate-pulse pointer-events-none hidden lg:block">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.5 7.5L22 10l-7.5 2.5L12 20l-2.5-7.5L2 10l7.5-2.5L12 0z"/></svg>
+            </div>
+          </div>
         </div>
         
-        <!-- Hero Content -->
-        <div class="relative z-10 max-w-6xl mx-auto px-6 text-center">
-          <!-- Badge -->
-          <div class="hero-badge inline-flex items-center space-x-3 px-5 py-2.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 mb-8">
+          <!-- Hero Content -->
+          <div class="relative z-20 max-w-7xl mx-auto px-6 text-center">
+            <!-- Badge -->
+            <div class="hero-badge inline-flex items-center space-x-3 px-6 py-3 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 mb-10">
             <span class="relative flex h-2.5 w-2.5">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#D4AF37]"></span>
@@ -787,16 +861,39 @@ gsap.registerPlugin(ScrollTrigger);
     .sponsor-card {
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
+    
+    .football-element {
+      filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+    }
+
+    .gold-ember {
+      animation: emberFloat 6s ease-in-out infinite;
+      box-shadow: 0 0 10px #D4AF37;
+    }
+
+    @keyframes emberFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+      50% { transform: translate(20px, -40px) scale(1.5); opacity: 0.6; }
+    }
+
+    .animate-pulse-subtle {
+      animation: pulseSubtle 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseSubtle {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
   `]
 })
 export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy {
-  
+
   isScrolled = false;
   mobileMenuOpen = false;
   scrollHandler: (() => void) | null = null;
-  
-  particles: Array<{x: number, y: number, delay: number, duration: number}> = [];
-  
+
+  particles: Array<{ x: number, y: number, delay: number, duration: number }> = [];
+
   navLinks = [
     { label: 'Home', href: '#hero' },
     { label: 'Tournaments', href: '#tournaments' },
@@ -805,74 +902,85 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
     { label: 'Pricing', href: '#pricing' },
     { label: 'Contact', href: '#contact' },
   ];
-  
+
+  footballIcons = [
+    { type: 'ball', x: 8, y: 20, size: 50, rotation: 15 },
+    { type: 'boot', x: 15, y: 55, size: 70, rotation: -25 },
+    { type: 'whistle', x: 12, y: 85, size: 40, rotation: 10 },
+    { type: 'trophy', x: 85, y: 25, size: 80, rotation: -15 },
+    { type: 'ball', x: 92, y: 50, size: 60, rotation: 45 },
+    { type: 'goal', x: 88, y: 80, size: 90, rotation: 5 },
+    { type: 'jersey', x: 5, y: 70, size: 55, rotation: -10 },
+    { type: 'trophy', x: 90, y: 15, size: 45, rotation: 20 },
+  ];
+
   heroStats = [
     { value: '500+', label: 'Tournaments' },
     { value: '50K+', label: 'Teams' },
     { value: '1M+', label: 'Players' },
     { value: '$10M+', label: 'Prizes' },
   ];
-  
+
   tournaments = [
-    { 
-      name: 'Champions League 2026', 
-      description: 'The biggest club competition in world football. Top clubs battle for ultimate glory.', 
-      date: 'March - June 2026', 
-      prize: '$5M Prize Pool', 
+    {
+      name: 'Champions League 2026',
+      description: 'The biggest club competition in world football. Top clubs battle for ultimate glory.',
+      date: 'March - June 2026',
+      prize: '$5M Prize Pool',
       type: 'Professional',
-      image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600' 
+      image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600'
     },
-    { 
-      name: 'World Cup Qualifiers', 
-      description: 'National teams competing for a spot in the global showpiece.', 
-      date: 'September - November 2026', 
-      prize: '$2M Prize Pool', 
+    {
+      name: 'World Cup Qualifiers',
+      description: 'National teams competing for a spot in the global showpiece.',
+      date: 'September - November 2026',
+      prize: '$2M Prize Pool',
       type: 'International',
-      image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600' 
+      image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600'
     },
-    { 
-      name: 'Youth Championship', 
-      description: 'Future stars showcase their talent in this prestigious youth tournament.', 
-      date: 'July - August 2026', 
-      prize: '$500K Prize Pool', 
+    {
+      name: 'Youth Championship',
+      description: 'Future stars showcase their talent in this prestigious youth tournament.',
+      date: 'July - August 2026',
+      prize: '$500K Prize Pool',
       type: 'Youth',
-      image: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600' 
+      image: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=600'
     },
   ];
-  
+
   features = [
-    { 
-      title: 'Real-time Match Tracking', 
+    {
+      title: 'Real-time Match Tracking',
       description: 'Live scores, stats, and updates streamed instantly to fans worldwide with sub-second latency.',
       icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>'
     },
-    { 
-      title: 'Team Management', 
+    {
+      title: 'Team Management',
       description: 'Comprehensive tools for roster management, player stats, transfers, and performance analytics.',
       icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>'
     },
-    { 
-      title: 'Venue Scheduling', 
+    {
+      title: 'Venue Scheduling',
       description: 'Smart scheduling algorithms with conflict resolution, capacity management, and logistics optimization.',
       icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>'
     },
-    { 
-      title: 'Prize Distribution', 
+    {
+      title: 'Prize Distribution',
       description: 'Automated prize money distribution with transparent tracking and multi-currency support.',
       icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
     },
-    { 
-      title: 'Live Streaming', 
+    {
+      title: 'Live Streaming',
       description: 'Integrated streaming solutions with multi-camera support and global CDN delivery.',
       icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>'
     },
-    { 
-      title: 'Analytics Dashboard', 
+    {
+      title: 'Analytics Dashboard',
       description: 'Deep insights into tournament performance, engagement metrics, and predictive analytics.',
       icon: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>'
     },
   ];
-  
+
   aboutPoints = [
     'Industry-leading technology since 2020',
     'Trusted by 500+ tournament organizers',
@@ -895,14 +1003,14 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
 
   mockBars = [35, 50, 45, 78, 55, 82, 70, 95, 60, 88, 75, 100];
   mockMonths = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-  
+
   pricingPlans = [
-    { 
-      name: 'Starter', 
-      description: 'Perfect for small tournaments', 
-      price: '$49', 
-      period: 'month', 
-      featured: false, 
+    {
+      name: 'Starter',
+      description: 'Perfect for small tournaments',
+      price: '$49',
+      period: 'month',
+      featured: false,
       cta: 'Get Started',
       ctaLink: '#',
       features: [
@@ -911,14 +1019,14 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
         'Email support',
         'Standard branding',
         '5GB storage',
-      ] 
+      ]
     },
-    { 
-      name: 'Professional', 
-      description: 'For growing organizations', 
-      price: '$149', 
-      period: 'month', 
-      featured: true, 
+    {
+      name: 'Professional',
+      description: 'For growing organizations',
+      price: '$149',
+      period: 'month',
+      featured: true,
       cta: 'Start Free Trial',
       ctaLink: '#',
       features: [
@@ -929,14 +1037,14 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
         'Live streaming integration',
         'API access',
         '50GB storage',
-      ] 
+      ]
     },
-    { 
-      name: 'Enterprise', 
-      description: 'For large-scale events', 
-      price: '$499', 
-      period: 'month', 
-      featured: false, 
+    {
+      name: 'Enterprise',
+      description: 'For large-scale events',
+      price: '$499',
+      period: 'month',
+      featured: false,
       cta: 'Contact Us',
       ctaLink: '#',
       features: [
@@ -947,31 +1055,31 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
         'SLA guarantee',
         'On-premise deployment',
         'Unlimited storage',
-      ] 
+      ]
     },
   ];
-  
+
   testimonials = [
-    { 
-      name: 'James Rodriguez', 
-      role: 'Tournament Director, La Liga', 
+    {
+      name: 'James Rodriguez',
+      role: 'Tournament Director, La Liga',
       text: 'ATB SPORTS transformed how we manage our league. The platform handles everything from registration to live scoring seamlessly. Our fans love it!',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face'
     },
-    { 
-      name: 'Sarah Chen', 
-      role: 'Club Manager, FC United', 
+    {
+      name: 'Sarah Chen',
+      role: 'Club Manager, FC United',
       text: 'The best investment we made for our club. The team management tools are incredible, and our fans love the real-time updates.',
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&crop=face'
     },
-    { 
-      name: 'Michael Park', 
-      role: 'League Commissioner, K-League', 
+    {
+      name: 'Michael Park',
+      role: 'League Commissioner, K-League',
       text: 'We scaled from 20 to 200 teams in one year. ATB SPORTS handled it all without missing a beat. The support team is phenomenal!',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face'
     },
   ];
-  
+
   sponsors = [
     { name: 'Nike', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg' },
     { name: 'Adidas', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg' },
@@ -982,21 +1090,21 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
     { name: 'Mastercard', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg' },
     { name: 'Huawei', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e8/Huawei_Logo.svg' },
   ];
-  
+
   sponsorStats = [
     { value: '50+', label: 'Official Sponsors' },
     { value: '$5M+', label: 'Sponsorship Value' },
     { value: '100+', label: 'Countries Reached' },
     { value: '1B+', label: 'Brand Impressions' },
   ];
-  
+
   socials = [
     { url: '#', icon: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>' },
     { url: '#', icon: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>' },
     { url: '#', icon: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.132 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.584-.072-4.85c-.052-1.17-.247-1.803-.413-2.227-.217-.562-.477-.96-.896-1.382-.419-.419-.824-.679-1.38-.896-.42-.164-1.057-.36-2.227-.413-1.266-.057-1.646-.07-4.85-.07s-3.584.015-4.85.072c-1.17.052-1.803.247-2.227.413-.562.217-.96.477-1.382.896-.419.419-.679.824-.896 1.38-.164.42-.36 1.057-.413 2.227-.057 1.266-.07 1.646-.07 4.85s.015 3.584.072 4.85c.052 1.17.247 1.803.413 2.227.217.562.477.96.896 1.382.419.419.824.679 1.38.896.42.164 1.057.36 2.227.413 1.266.057 1.646.07 4.85.07zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 11-2.881 0 1.44 1.44 0 012.881 0z"/></svg>' },
     { url: '#', icon: '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>' },
   ];
-  
+
   footerLinks = [
     {
       title: 'Product',
@@ -1026,25 +1134,26 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
       ]
     },
   ];
-  
+
   contactForm = {
     name: '',
     email: '',
     subject: '',
     message: ''
   };
-  
+
   constructor(private el: ElementRef) {
     this.generateParticles();
   }
-  
+
   ngOnInit() {
     this.scrollHandler = this.onScroll.bind(this);
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', this.scrollHandler, { passive: true });
+      window.addEventListener('mousemove', this.onMouseMove.bind(this));
     }
   }
-  
+
   ngAfterViewInit() {
     if (typeof window !== 'undefined') {
       // Ensure Angular has finished rendering and DOM is stable
@@ -1053,13 +1162,14 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
       });
     }
   }
-  
+
   ngOnDestroy() {
     if (this.scrollHandler && typeof window !== 'undefined') {
       window.removeEventListener('scroll', this.scrollHandler);
+      window.removeEventListener('mousemove', this.onMouseMove.bind(this));
     }
   }
-  
+
   private generateParticles() {
     for (let i = 0; i < 40; i++) {
       this.particles.push({
@@ -1070,15 +1180,15 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
       });
     }
   }
-  
+
   private initGSAP() {
     // ─── HERO ENTRANCE ───────────────────────────────────────────────────────
     const heroTl = gsap.timeline({ delay: 0.2 });
     heroTl
-      .from('.hero-badge',    { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' })
-      .from('.hero-title',    { opacity: 0, y: 80, duration: 1, ease: 'power4.out' }, '-=0.4')
+      .from('.hero-badge', { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' })
+      .from('.hero-title', { opacity: 0, y: 80, duration: 1, ease: 'power4.out' }, '-=0.4')
       .from('.hero-subtitle', { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.5')
-      .from('.hero-buttons',  { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.5')
+      .from('.hero-buttons', { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.5')
       .to('.stat-card', { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out' }, '-=0.3');
 
     // ─── HERO PARALLAX ───────────────────────────────────────────────────────
@@ -1098,16 +1208,75 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
       if (title) gsap.to(title, { opacity: 1, y: 0, duration: 0.9, delay: 0.1, ease: 'power4.out', scrollTrigger: { trigger: section, start: 'top 82%', toggleActions: 'play none none reverse' } });
     });
 
+    // ─── FOOTBALL ELEMENTS ANIMATION ──────────────────────────────────────────
+    gsap.utils.toArray('.football-element').forEach((el: any) => {
+      // Floating motion
+      gsap.to(el, {
+        y: '+=30',
+        x: '+=15',
+        rotation: '+=20',
+        duration: gsap.utils.random(3, 5),
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: gsap.utils.random(0, 2)
+      });
+
+      // Parallax scroll
+      gsap.to(el, {
+        y: -150,
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1
+        }
+      });
+    });
+
+    // ─── ACTION PLAYERS ANIMATION ─────────────────────────────────────────────
+    gsap.from('.action-player-left', {
+      x: -250,
+      scale: 0.8,
+      opacity: 0,
+      duration: 2.5,
+      delay: 0.3,
+      ease: 'expo.out'
+    });
+    gsap.to('.action-player-left', {
+      y: -100,
+      rotation: -5,
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
+    });
+
+    gsap.from('.action-player-right', {
+      x: 250,
+      scale: 0.8,
+      opacity: 0,
+      duration: 2.5,
+      delay: 0.5,
+      ease: 'expo.out'
+    });
+    gsap.to('.action-player-right', {
+      y: -120,
+      rotation: 5,
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
+    });
+
     // ─── TOURNAMENT CARDS ─────────────────────────────────────────────────────
     gsap.utils.toArray('.tournament-card').forEach((card: any, i: number) => {
-      gsap.from(card, { opacity: 0, y: 70, rotateX: 8, duration: 0.9, delay: i * 0.12, ease: 'power3.out',
-        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' } });
+      gsap.from(card, {
+        opacity: 0, y: 70, rotateX: 8, duration: 0.9, delay: i * 0.12, ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+      });
     });
 
     // ─── FEATURE CARDS ────────────────────────────────────────────────────────
     gsap.utils.toArray('.feature-card').forEach((card: any, i: number) => {
-      gsap.from(card, { opacity: 0, y: 60, scale: 0.96, duration: 0.8, delay: (i % 3) * 0.1, ease: 'power3.out',
-        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' } });
+      gsap.from(card, {
+        opacity: 0, y: 60, scale: 0.96, duration: 0.8, delay: (i % 3) * 0.1, ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+      });
     });
 
     // ─── ABOUT SECTION ─────────────────────────────────────────────────────────
@@ -1158,30 +1327,38 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
 
     // ─── PRICING CARDS ────────────────────────────────────────────────────────
     gsap.utils.toArray('.pricing-card').forEach((card: any, i: number) => {
-      gsap.from(card, { opacity: 0, y: 80, duration: 0.9, delay: i * 0.15, ease: 'power4.out',
-        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' } });
+      gsap.from(card, {
+        opacity: 0, y: 80, duration: 0.9, delay: i * 0.15, ease: 'power4.out',
+        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+      });
     });
 
     // ─── TESTIMONIAL CARDS ────────────────────────────────────────────────────
     gsap.utils.toArray('.testimonial-card').forEach((card: any, i: number) => {
-      gsap.from(card, { opacity: 0, y: 60, scale: 0.95, duration: 0.8, delay: i * 0.15, ease: 'power3.out',
-        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' } });
+      gsap.from(card, {
+        opacity: 0, y: 60, scale: 0.95, duration: 0.8, delay: i * 0.15, ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' }
+      });
     });
 
     // ─── SPONSORS STATS COUNTER ─────────────────────────────────────────────
-    gsap.from('.sponsor-stat-val', { opacity: 0, y: 30, duration: 0.7, stagger: 0.1, ease: 'power3.out',
-      scrollTrigger: { trigger: '#sponsors', start: 'top 80%', toggleActions: 'play none none reverse' } });
+    gsap.from('.sponsor-stat-val', {
+      opacity: 0, y: 30, duration: 0.7, stagger: 0.1, ease: 'power3.out',
+      scrollTrigger: { trigger: '#sponsors', start: 'top 80%', toggleActions: 'play none none reverse' }
+    });
 
     // ─── CTA SECTION ──────────────────────────────────────────────────────────
     const ctaTl = gsap.timeline({ scrollTrigger: { trigger: '#cta', start: 'top 75%', toggleActions: 'play none none reverse' } });
     ctaTl
-      .from('.cta-title',      { opacity: 0, y: 80, duration: 1, ease: 'power4.out' })
-      .from('.cta-subtitle',   { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.5')
+      .from('.cta-title', { opacity: 0, y: 80, duration: 1, ease: 'power4.out' })
+      .from('.cta-subtitle', { opacity: 0, y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.5')
       .from('.cta-btn-primary, .cta-btn-secondary', { opacity: 0, y: 30, stagger: 0.15, duration: 0.7, ease: 'back.out(1.4)' }, '-=0.4');
 
     // ─── FOOTER FADE ──────────────────────────────────────────────────────────
-    gsap.from('footer > div > div', { opacity: 0, y: 40, duration: 0.9, ease: 'power3.out',
-      scrollTrigger: { trigger: 'footer', start: 'top 90%', toggleActions: 'play none none reverse' } });
+    gsap.from('footer > div > div', {
+      opacity: 0, y: 40, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: 'footer', start: 'top 90%', toggleActions: 'play none none reverse' }
+    });
 
     // ─── MAGNETIC BUTTONS ─────────────────────────────────────────────────────
     gsap.utils.toArray('.magnetic').forEach((btn: any) => {
@@ -1201,26 +1378,54 @@ export class PremiumLandingComponent implements OnInit, AfterViewInit, OnDestroy
       ScrollTrigger.refresh();
     }, 100);
   }
-  
+
   onScroll() {
     this.isScrolled = window.scrollY > 50;
   }
-  
+
   get navClasses(): string {
     return 'bg-black/60 backdrop-blur-xl border border-[#D4AF37]/30 shadow-2xl shadow-black/50';
   }
-  
+
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
-  
+
   closeMobileMenu() {
     this.mobileMenuOpen = false;
   }
-  
+
   onSubmit() {
     console.log('Form submitted:', this.contactForm);
     alert('Thank you for your message! We will get back to you soon.');
     this.contactForm = { name: '', email: '', subject: '', message: '' };
+  }
+
+  onMouseMove(e: MouseEvent) {
+    if (typeof window === 'undefined') return;
+    const x = (e.clientX - window.innerWidth / 2) / 50;
+    const y = (e.clientY - window.innerHeight / 2) / 50;
+
+    const leftEl = document.getElementById('parallax-left');
+    const rightEl = document.getElementById('parallax-right');
+
+    if (leftEl) {
+      gsap.to(leftEl, { x: x * 2, y: y * 2, duration: 1, ease: 'power2.out' });
+    }
+    if (rightEl) {
+      gsap.to(rightEl, { x: -x * 2, y: -y * 2, duration: 1, ease: 'power2.out' });
+    }
+  }
+
+  getIconSvg(type: string): string {
+    const icons: any = {
+      ball: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M7 5l10 14M17 5L7 19"/></svg>`,
+      boot: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M4 16c0 1.1.9 2 2 2h12a2 2 0 002-2v-4a2 2 0 00-2-2h-3l-2-4H5a2 2 0 00-2 2v8z"/><path d="M14 10V8M17 10V8M8 18l-1 4M12 18l-1 4M16 18l-1 4"/></svg>`,
+      whistle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M18 7H6a3 3 0 00-3 3v4a3 3 0 003 3h4l3 3 1-1-1-2h5a3 3 0 003-3v-4a3 3 0 00-3-3z"/><circle cx="8" cy="12" r="2"/></svg>`,
+      trophy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18M4 22h16M10 14.66V17c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2.34M12 4v4M12 17.5V22M7 4h10c0 4.42-3.58 8-8 8s-8-3.58-8-8z"/></svg>`,
+      goal: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M6 6v14M18 6v14M2 13h20M2 17h20M9 6v14M15 6v14"/></svg>`,
+      jersey: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 1.88v4.31a2 2 0 00.58 1.42l3.14 3.14V20a2 2 0 002 2h8a2 2 0 002-2v-5.79l3.14-3.14a2 2 0 00.58-1.42V5.34a2 2 0 00-1.34-1.88z"/></svg>`
+    };
+    return icons[type] || '';
   }
 }
