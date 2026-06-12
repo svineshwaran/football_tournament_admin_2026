@@ -98,7 +98,6 @@ export class RolesComponent implements OnInit {
         this.isFetchingData.set(false);
       },
       error: (err) => {
-        console.error('Error loading roles:', err);
         this.isFetchingData.set(false);
       }
     });

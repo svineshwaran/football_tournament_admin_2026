@@ -62,13 +62,11 @@ export class TournamentSponsorsComponent implements OnInit, OnChanges {
             this.isLoading.set(false);
           },
           error: (err) => {
-            console.error('Error loading sponsors:', err);
             this.isLoading.set(false);
           }
         });
       },
       error: (err) => {
-        console.error('Error loading mappings:', err);
         this.isLoading.set(false);
       }
     });
@@ -117,7 +115,6 @@ export class TournamentSponsorsComponent implements OnInit, OnChanges {
         this.ui.showToast('Sponsor assigned successfully', 'success');
       },
       error: (err) => {
-        console.error('Error assigning sponsor:', err);
         this.ui.endAction();
         this.ui.showToast('Failed to assign sponsor', 'error');
       }
@@ -142,7 +139,6 @@ export class TournamentSponsorsComponent implements OnInit, OnChanges {
         this.ui.showToast('Sponsor removed from tournament', 'success');
       },
       error: (err) => {
-        console.error('Error removing sponsor:', err);
         this.ui.endAction();
         this.ui.showToast('Failed to remove sponsor', 'error');
       }

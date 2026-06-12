@@ -281,7 +281,6 @@ export class CreateTeamModalComponent implements OnChanges {
           this.resetForm();
         },
         error: (err: any) => {
-          console.error('Failed to create team', err);
           this.isSubmitting.set(false);
         }
       });
@@ -294,7 +293,6 @@ export class CreateTeamModalComponent implements OnChanges {
           this.close();
         },
         error: (err: any) => {
-          console.error('Failed to update team', err);
           this.isSubmitting.set(false);
         }
       });
