@@ -65,7 +65,7 @@
                                 {{ mapping.created_at | date:'mediumDate' }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button (click)="openRemoveConfirm(mapping)" 
+                                <button (click)="removeMapping(mapping)" 
                                         class="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                                         [title]="'TOURNAMENT_DASHBOARD.SPONSORS.REMOVE_TITLE' | translate">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -144,13 +144,6 @@
     </div>
 }
 
-<app-confirm-modal *ngIf="showRemoveConfirm"
-                  [show]="showRemoveConfirm"
-                  [title]="'TOURNAMENT_DASHBOARD.SPONSORS.CONFIRM_REMOVE_TITLE' | translate"
-                  [message]="'TOURNAMENT_DASHBOARD.SPONSORS.CONFIRM_REMOVE_MSG' | translate"
-                  (onConfirm)="removeMapping()"
-                  (onCancel)="showRemoveConfirm = false">
-</app-confirm-modal>
 
 <app-sponsor-modal *ngIf="isCreateModalOpen()"
                   (close)="isCreateModalOpen.set(false)"

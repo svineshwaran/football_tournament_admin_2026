@@ -2,7 +2,6 @@ import { Component, OnInit, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SettingsService } from '../../settings.service';
-import { ConfirmModalComponent } from '../../../components/shared/confirm-modal.component';
 import { ProfileModalComponent } from '../../../components/shared/profile-modal.component';
 import { UiService } from '../../../services/ui.service';
 import { LoaderComponent } from '../../../components/loader/loader.component';
@@ -10,7 +9,7 @@ import { LoaderComponent } from '../../../components/loader/loader.component';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ConfirmModalComponent, ProfileModalComponent, LoaderComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ProfileModalComponent, LoaderComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -117,7 +116,6 @@ import { LoaderComponent } from '../../../components/loader/loader.component';
             >
               {{ isLoading ? 'Processing...' : (editingUserId ? 'Update User' : 'Create User') }}
             </button>
-            <p *ngIf="errorMessage" class="text-red-500 text-sm mt-3 text-center bg-red-500/10 py-2 rounded-lg border border-red-500/20">{{ errorMessage }}</p>
           </div>
         </form>
       </div>
@@ -194,13 +192,6 @@ import { LoaderComponent } from '../../../components/loader/loader.component';
           }
         </div>
       </div>
-      <app-confirm-modal
-        [show]="showDeleteConfirm"
-        title="Delete User"
-        [message]="'Are you sure you want to delete ' + userToDelete?.user_name + '? This action cannot be undone.'"
-        (onConfirm)="confirmDelete()"
-        (onCancel)="showDeleteConfirm = false"
-      ></app-confirm-modal>
 
       <app-profile-modal
         [show]="showProfileModal()"
@@ -216,12 +207,7 @@ export class UsersComponent implements OnInit {
   showForm = false;
   editingUserId: number | null = null;
   isLoading = false;
-  errorMessage = '';
   userForm: FormGroup;
-
-  // Modal State
-  showDeleteConfirm = false;
-  userToDelete: any = null;
 
   // Custom Dropdown State
   showRoleDropdown = signal(false);
@@ -267,7 +253,7 @@ export class UsersComponent implements OnInit {
         this.users.set(data);
         this.settingsService.getRoles().subscribe({
           next: (rolesData) => {
-            this.roles.set(rolesData.filter((r: any) => r.id !== 1));
+            this.roles.set(rolesData);
             this.isFetchingData.set(false);
           },
           error: () => this.isFetchingData.set(false)
@@ -280,7 +266,6 @@ export class UsersComponent implements OnInit {
   resetForm() {
     this.editingUserId = null;
     this.userForm.reset();
-    this.errorMessage = '';
   }
 
   editUser(user: any) {
@@ -328,40 +313,35 @@ export class UsersComponent implements OnInit {
     return this.roles().find(r => r.id === roleId)?.name;
   }
 
-  deleteUser(id: number) {
+  async deleteUser(id: number) {
     const user = this.users().find(u => u.id === id);
-    if (user) {
-      this.userToDelete = user;
-      this.showDeleteConfirm = true;
+    if (!user) return;
+    
+    const confirmed = await this.ui.confirmAction(
+      'Delete User', 
+      'Are you sure you want to delete ' + user.user_name + '? This action cannot be undone.'
+    );
+    
+    if (confirmed) {
+      this.isLoading = true;
+      this.settingsService.deleteUser(user.id).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.ui.showToast('User deleted successfully', 'success');
+          this.loadData();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.ui.showToast(err.error?.error || 'Failed to delete user', 'error');
+        }
+      });
     }
-  }
-
-  confirmDelete() {
-    if (!this.userToDelete) return;
-
-    this.isLoading = true;
-    this.showDeleteConfirm = false;
-
-    this.settingsService.deleteUser(this.userToDelete.id).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.userToDelete = null;
-        this.ui.showToast('User deleted successfully', 'success');
-        this.loadData();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.userToDelete = null;
-        this.ui.showToast(err.error?.error || 'Failed to delete user', 'error');
-      }
-    });
   }
 
   onSubmit() {
     if (this.userForm.invalid) return;
 
     this.isLoading = true;
-    this.errorMessage = '';
     const userData = {
       ...this.userForm.value,
       id: this.editingUserId
@@ -377,7 +357,7 @@ export class UsersComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.error || 'Failed to save user';
+        this.ui.showToast(err.error?.error || 'Failed to save user', 'error');
       }
     });
   }

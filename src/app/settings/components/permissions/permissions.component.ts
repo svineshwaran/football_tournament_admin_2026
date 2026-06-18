@@ -2,14 +2,13 @@ import { Component, OnInit, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SettingsService } from '../../settings.service';
-import { ConfirmModalComponent } from '../../../components/shared/confirm-modal.component';
 import { UiService } from '../../../services/ui.service';
 import { LoaderComponent } from '../../../components/loader/loader.component';
 
 @Component({
   selector: 'app-permissions',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ConfirmModalComponent, LoaderComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LoaderComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -166,13 +165,6 @@ import { LoaderComponent } from '../../../components/loader/loader.component';
         </div>
       </div>
 
-      <app-confirm-modal
-        [show]="showDeleteConfirm"
-        title="Delete Permission Mapping"
-        [message]="'Are you sure you want to remove permissions for this role? This cannot be undone.'"
-        (onConfirm)="confirmDelete()"
-        (onCancel)="showDeleteConfirm = false"
-      ></app-confirm-modal>
     </div>
   `
 })
@@ -184,8 +176,6 @@ export class PermissionsComponent implements OnInit {
   editingId: number | null = null;
   permissionForm: FormGroup;
 
-  showDeleteConfirm = false;
-  recordToDelete: any = null;
   showRoleDropdown = signal(false);
 
   @HostListener('document:click', ['$event'])
@@ -231,7 +221,7 @@ export class PermissionsComponent implements OnInit {
         this.permissions.set(data);
         this.settingsService.getRoles().subscribe({
           next: (rolesData) => {
-            this.roles.set(rolesData.filter((r: any) => r.id !== 1));
+            this.roles.set(rolesData.filter((r: any) => r.name?.toUpperCase() !== 'ADMIN'));
             this.isFetchingData.set(false);
           },
           error: () => this.isFetchingData.set(false)
@@ -283,28 +273,26 @@ export class PermissionsComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  onDelete(p: any) {
-    this.recordToDelete = p;
-    this.showDeleteConfirm = true;
-  }
-
-  confirmDelete() {
-    if (!this.recordToDelete) return;
-    this.isLoading = true;
-    this.showDeleteConfirm = false;
-    this.settingsService.deletePermission(this.recordToDelete.id).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.recordToDelete = null;
-        this.ui.showToast('Permission mapping removed', 'success');
-        this.loadData();
-      },
-      error: () => {
-        this.isLoading = false;
-        this.recordToDelete = null;
-        this.ui.showToast('Failed to delete permission mapping', 'error');
-      }
-    });
+  async onDelete(p: any) {
+    const confirmed = await this.ui.confirmAction(
+      'Delete Permission Mapping',
+      'Are you sure you want to remove permissions for this role? This cannot be undone.'
+    );
+    
+    if (confirmed) {
+      this.isLoading = true;
+      this.settingsService.deletePermission(p.id).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.ui.showToast('Permission mapping removed', 'success');
+          this.loadData();
+        },
+        error: () => {
+          this.isLoading = false;
+          this.ui.showToast('Failed to delete permission mapping', 'error');
+        }
+      });
+    }
   }
 
   onSubmit() {

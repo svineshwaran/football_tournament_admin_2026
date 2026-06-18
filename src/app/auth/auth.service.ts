@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
 import { API_URL } from '../core/config/app.config';
+import { UiService } from '../services/ui.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,7 +12,7 @@ export class AuthService {
     baseUrl = `${API_URL}/auth`;
     private userSignal = signal<any | null>(JSON.parse(localStorage.getItem('user') || 'null'));
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(private http: HttpClient, private router: Router, private ui: UiService) { }
 
     get user() {
         return this.userSignal();
@@ -65,6 +66,7 @@ export class AuthService {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         this.userSignal.set(null);
+        this.ui.showToast('Logged out successfully', 'success');
         this.router.navigate(['/login']);
     }
 

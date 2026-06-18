@@ -16,4 +16,5 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 export class TournamentParticipantsComponent {
     private translate = inject(TranslateService);
     @Input() data: any;
+    todayDate = new Date().toISOString().split('T')[0];
 }

@@ -4,6 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
     selector: 'app-login',
@@ -24,7 +25,8 @@ export class LoginComponent implements OnInit {
         private fb: FormBuilder,
         private auth: AuthService,
         private router: Router,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private ui: UiService
     ) {
         this.loginForm = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
@@ -85,6 +87,7 @@ export class LoginComponent implements OnInit {
                     if (res.token) {
                         this.auth.setAuthenticatedUser(res.user, res.token);
                         this.successMessage = 'Login successful! Redirecting...';
+                        this.ui.showToast('Login successful! Redirecting...', 'success');
 
                         const returnUrl = this.route.snapshot.queryParams['returnUrl'];
                         setTimeout(() => {
@@ -102,9 +105,11 @@ export class LoginComponent implements OnInit {
 
                     if (err.error?.error === "User not found") {
                         this.errorMessage = 'Account not found. Please create an account.';
+                        this.ui.showToast(this.errorMessage, 'error');
                         setTimeout(() => this.router.navigate(['/register']), 2000);
                     } else {
                         this.errorMessage = err.error?.error || 'Login failed. Please try again.';
+                        this.ui.showToast(this.errorMessage, 'error');
                     }
                 }
             });

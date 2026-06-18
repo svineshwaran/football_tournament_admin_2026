@@ -3,8 +3,9 @@
     <!-- SECTION 1: SYSTEM OVERVIEW -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @for (stat of platformStats; track stat.label) {
-        <div
-            class="bg-black-card border border-white/10 rounded-xl p-4 flex items-center gap-4 hover:border-gold-400/30 hover:shadow-[0_0_15px_rgba(212,175,55,0.1)] transition-all relative overflow-hidden group">
+        <div (click)="navigateTo(stat)"
+            class="bg-black-card border border-white/10 rounded-xl p-4 flex items-center gap-4 hover:border-gold-400/30 hover:shadow-[0_0_15px_rgba(212,175,55,0.1)] transition-all relative overflow-hidden group"
+            [class.cursor-pointer]="stat.route && stat.value !== '0' && stat.value !== 0 && stat.value !== '—'">
             <!-- Gradient Border Effect -->
             <div
                 class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-gold-400/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
@@ -28,8 +29,10 @@
     @if (showAllSections) {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         @for (activity of activityStats; track activity.label) {
-        <div class="bg-black-card border rounded-xl p-4 flex items-center gap-4 hover:bg-white/5 transition-all relative overflow-hidden group"
-            [class]="activity.borderClass + ' ' + activity.bgClass">
+        <div (click)="navigateTo(activity)"
+            class="bg-black-card border rounded-xl p-4 flex items-center gap-4 hover:bg-white/5 transition-all relative overflow-hidden group"
+            [class]="activity.borderClass + ' ' + activity.bgClass"
+            [class.cursor-pointer]="activity.route && activity.value !== '0' && activity.value !== 0 && activity.value !== '—'">
 
             <div class="w-10 h-10 rounded-full flex items-center justify-center opacity-80 shrink-0"
                 [class]="activity.colorClass + ' bg-white/5'">

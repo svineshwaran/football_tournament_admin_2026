@@ -17,7 +17,6 @@ import { MatchInfoComponent } from './components/match-info/match-info.component
 import { H2hComponent } from './components/h2h/h2h.component';
 import { LineupEditorComponent } from './components/lineup-editor/lineup-editor.component';
 import { MatchStatsComponent } from './components/match-stats/match-stats.component';
-import { ConfirmModalComponent } from '../../../components/shared/confirm-modal.component';
 import { TeamMemberService, TeamMember } from '../../../teams/team-member.service';
 import { getLiveMinute } from '../../../core/utils/live-clock.util';
 
@@ -36,7 +35,6 @@ import { getLiveMinute } from '../../../core/utils/live-clock.util';
         H2hComponent,
         LineupEditorComponent,
         MatchStatsComponent,
-        ConfirmModalComponent,
         TranslateModule
     ],
     templateUrl: './match-details.component.html'
@@ -75,9 +73,7 @@ export class MatchDetailsComponent implements OnInit {
     isLineupModalOpen = signal(false);
     isEditModalOpen = signal(false);
 
-    // Deletion confirmation state
-    isConfirmDeleteOpen = signal(false);
-    eventToDeleteId = signal<string | null>(null);
+
 
     // Helpers to easily access lineup objects in template
     get homeLineup() {
@@ -507,29 +503,28 @@ export class MatchDetailsComponent implements OnInit {
         });
     }
 
-    handleDeleteEvent(eventId: string) {
-        this.eventToDeleteId.set(eventId);
-        this.isConfirmDeleteOpen.set(true);
-    }
-
-    confirmDeleteEvent() {
-        const eventId = this.eventToDeleteId();
+    async handleDeleteEvent(eventId: string) {
         if (!eventId) return;
 
-        this.isConfirmDeleteOpen.set(false);
-        this.ui.startAction();
-        this.tournamentService.deleteMatchEvent(this.matchId(), eventId).subscribe({
-            next: () => {
-                this.loadMatchDetails();
-                this.ui.endAction();
-                this.showToast(this.translate.instant('MATCH_DETAILS.TOAST.EVENT_DELETE_SUCCESS'), 'success');
-                this.eventToDeleteId.set(null);
-            },
-            error: (err: any) => {
-                this.ui.endAction();
-                this.showToast(this.translate.instant('MATCH_DETAILS.TOAST.EVENT_DELETE_ERROR'), 'error');
-            }
-        });
+        const confirmed = await this.ui.confirmAction(
+            this.translate.instant('MATCH_DETAILS.TOAST.EVENT_DELETE_CONFIRM_TITLE') || 'Delete Event',
+            this.translate.instant('MATCH_DETAILS.TOAST.EVENT_DELETE_CONFIRM_MSG') || 'Are you sure you want to delete this event?'
+        );
+
+        if (confirmed) {
+            this.ui.startAction();
+            this.tournamentService.deleteMatchEvent(this.matchId(), eventId).subscribe({
+                next: () => {
+                    this.loadMatchDetails();
+                    this.ui.endAction();
+                    this.showToast(this.translate.instant('MATCH_DETAILS.TOAST.EVENT_DELETE_SUCCESS'), 'success');
+                },
+                error: (err: any) => {
+                    this.ui.endAction();
+                    this.showToast(this.translate.instant('MATCH_DETAILS.TOAST.EVENT_DELETE_ERROR'), 'error');
+                }
+            });
+        }
     }
 
     getRequiredLineupCounts() {
@@ -596,8 +591,12 @@ export class MatchDetailsComponent implements OnInit {
         });
     }
 
-    handleCompleteMatch() {
-        if (!confirm(this.translate.instant('MATCH_DETAILS.TIMELINE.COMPLETE_CONFIRM_MSG'))) return;
+    async handleCompleteMatch() {
+        const confirmed = await this.ui.confirmAction(
+            'Complete Match',
+            this.translate.instant('MATCH_DETAILS.TIMELINE.COMPLETE_CONFIRM_MSG')
+        );
+        if (!confirmed) return;
 
         this.ui.startAction();
         this.http.put<{ success: boolean, data: any }>(`${environment.apiUrl}/api/matches/${this.matchId()}`, {

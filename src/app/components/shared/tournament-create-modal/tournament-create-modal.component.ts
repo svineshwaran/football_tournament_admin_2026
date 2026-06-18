@@ -21,6 +21,7 @@ export class TournamentCreateModalComponent {
     @Output() onSuccess = new EventEmitter<any>();
 
     isCreating = signal(false);
+    todayDate = new Date().toISOString().split('T')[0];
     
     newTournament = {
         name: '',

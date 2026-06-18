@@ -53,13 +53,13 @@
                 <div>
                     <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">{{
                         'DASHBOARD.MODAL.START_DATE' | translate }} *</label>
-                    <input type="date" [(ngModel)]="newTournament.startDate"
+                    <input type="date" [(ngModel)]="newTournament.startDate" [min]="todayDate"
                         class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/50 transition-all [color-scheme:dark]" />
                 </div>
                 <div>
                     <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">{{
                         'DASHBOARD.MODAL.END_DATE' | translate }}</label>
-                    <input type="date" [(ngModel)]="newTournament.endDate"
+                    <input type="date" [(ngModel)]="newTournament.endDate" [min]="newTournament.startDate || todayDate"
                         class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-white focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/50 transition-all [color-scheme:dark]" />
                 </div>
             </div>

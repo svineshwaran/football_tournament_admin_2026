@@ -31,6 +31,7 @@ export class TournamentScheduleComponent implements OnInit {
     isLoadingStructure = signal(false);
     isSavingMatch = signal(false);
     availableTeams = signal<{ id: number; name: string }[]>([]);
+    todayDate = new Date().toISOString().split('T')[0];
 
     // ─── Time Slot Dropdown ──────────────────────────────────────────────────
     isTimeSlotDropdownOpen = signal(false);

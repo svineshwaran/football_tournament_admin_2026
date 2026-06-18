@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TeamService, Team } from './team.service';
 import { CreateTeamModalComponent } from './components/create-team-modal/create-team-modal.component';
-import { ConfirmModalComponent } from '../components/shared/confirm-modal.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { API_URL } from '../core/config/app.config';
 import { LoaderComponent } from '../components/loader/loader.component';
@@ -14,7 +13,7 @@ import { AuthService } from '../auth/auth.service';
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule, FormsModule, CreateTeamModalComponent, ConfirmModalComponent, TranslateModule, LoaderComponent],
+  imports: [CommonModule, FormsModule, CreateTeamModalComponent, TranslateModule, LoaderComponent],
   template: `
     <div class="space-y-6">
       <!-- Header -->
@@ -152,14 +151,6 @@ import { AuthService } from '../auth/auth.service';
       (teamUpdated)="onTeamUpdated()">
     </app-create-team-modal>
 
-    <!-- Delete Confirmation -->
-    <app-confirm-modal
-      [show]="isConfirmOpen()"
-      [title]="'TEAMS.DELETE_TITLE' | translate"
-      [message]="deleteMessage()"
-      (onConfirm)="executeDelete()"
-      (onCancel)="cancelDelete()">
-    </app-confirm-modal>
   `
 })
 export class TeamsComponent {
@@ -186,10 +177,7 @@ export class TeamsComponent {
   // Per-card action menu
   openMenuId = signal<string | null>(null);
 
-  // Delete confirmation state
-  isConfirmOpen = signal(false);
   teamToDelete = signal<Team | null>(null);
-  deleteMessage = signal('');
 
   constructor() {
     this.loadTeams();
@@ -263,35 +251,24 @@ export class TeamsComponent {
 
   // --- Delete ---
 
-  confirmDelete(event: MouseEvent, team: Team) {
+  async confirmDelete(event: MouseEvent, team: Team) {
     event.stopPropagation();
     this.openMenuId.set(null);
-    this.teamToDelete.set(team);
-    this.deleteMessage.set(
-      this.translate.instant('TEAMS.DELETE_MESSAGE', { name: team.name })
-    );
-    this.isConfirmOpen.set(true);
-  }
-
-  cancelDelete() {
-    this.isConfirmOpen.set(false);
-    this.teamToDelete.set(null);
-  }
-
-  executeDelete() {
-    const team = this.teamToDelete();
-    if (!team) return;
-    this.teamService.delete(team.id).subscribe({
-      next: () => {
-        this.teams.update(list => list.filter(t => t.id !== team.id));
-        this.ui.showToast(this.translate.instant('TEAMS.DELETED'), 'success');
-        this.cancelDelete();
-      },
-      error: () => {
-        this.ui.showToast(this.translate.instant('TEAMS.DELETE_FAILED'), 'error');
-        this.cancelDelete();
-      }
-    });
+    
+    const message = this.translate.instant('TEAMS.DELETE_MESSAGE', { name: team.name });
+    const confirmed = await this.ui.confirmAction('Delete Team', message);
+    
+    if (confirmed) {
+      this.teamService.delete(team.id).subscribe({
+        next: () => {
+          this.teams.update(list => list.filter(t => t.id !== team.id));
+          this.ui.showToast(this.translate.instant('TEAMS.DELETED'), 'success');
+        },
+        error: () => {
+          this.ui.showToast(this.translate.instant('TEAMS.DELETE_FAILED'), 'error');
+        }
+      });
+    }
   }
 
   getImageUrl(path?: string): string {

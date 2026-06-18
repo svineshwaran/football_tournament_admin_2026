@@ -18,6 +18,10 @@ export class SettingsService {
         return this.http.post<any>(`${this.baseUrl}/roles`, { name });
     }
 
+    deleteRole(id: number): Observable<any> {
+        return this.http.delete<any>(`${this.baseUrl}/roles/${id}`);
+    }
+
     // Users
     getUsers(): Observable<any[]> {
         return this.http.get<any[]>(`${this.baseUrl}/users`);

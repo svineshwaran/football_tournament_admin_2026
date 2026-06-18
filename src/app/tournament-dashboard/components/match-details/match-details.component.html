@@ -630,13 +630,7 @@
                 (close)="closeLineupModal()" (save)="handleSaveLineups($event)">
             </app-lineup-editor>
 
-            <app-confirm-modal 
-                [show]="isConfirmDeleteOpen()" 
-                [title]="'COMMON.DELETE_CONFIRM' | translate" 
-                [message]="'MATCH_DETAILS.TIMELINE.DELETE_CONFIRM_MSG' | translate"
-                (onConfirm)="confirmDeleteEvent()" 
-                (onCancel)="isConfirmDeleteOpen.set(false)">
-            </app-confirm-modal>
+
         </div>
     </main>
 </div>

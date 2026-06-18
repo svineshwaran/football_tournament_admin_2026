@@ -54,12 +54,12 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">{{ 'TOURNAMENT_DASHBOARD.PARTICIPANTS.REG_OPEN' | translate }}</label>
-                        <input type="date" [(ngModel)]="data.regOpenDate"
+                        <input type="date" [(ngModel)]="data.regOpenDate" [min]="todayDate"
                             class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-sm text-white focus:border-gold-400 focus:outline-none transition-all [color-scheme:dark]" />
                     </div>
                     <div>
                         <label class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5 block">{{ 'TOURNAMENT_DASHBOARD.PARTICIPANTS.REG_CLOSE' | translate }}</label>
-                        <input type="date" [(ngModel)]="data.regCloseDate"
+                        <input type="date" [(ngModel)]="data.regCloseDate" [min]="data.regOpenDate || todayDate"
                             class="w-full bg-white/5 border border-black-border rounded-lg px-4 py-3 text-sm text-white focus:border-gold-400 focus:outline-none transition-all [color-scheme:dark]" />
                     </div>
                 </div>

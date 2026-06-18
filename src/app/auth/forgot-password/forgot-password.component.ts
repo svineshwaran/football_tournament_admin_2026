@@ -14,7 +14,7 @@ import { API_URL } from '../../core/config/app.config';
         <!-- Logo -->
         <div class="text-center mb-10">
           <a routerLink="/" class="inline-flex items-center gap-3">
-            <img src="assets/images/logo-gold.png" alt="ATB" class="h-12 mix-blend-screen">
+            <img src="/images/logo-gold.png" onerror="this.src='/assets/images/logo-gold.png'" alt="ATB" class="h-12 mix-blend-screen">
             <span class="text-2xl font-black tracking-widest text-[#D4AF37]">ATB SPORTS</span>
           </a>
         </div>

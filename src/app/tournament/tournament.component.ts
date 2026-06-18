@@ -5,9 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LoaderComponent } from '../components/loader/loader.component';
 import { TournamentService, TournamentDTO } from './tournament.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TournamentCreateModalComponent } from '../components/shared/tournament-create-modal/tournament-create-modal.component';
-import { ConfirmModalComponent } from '../components/shared/confirm-modal.component';
+import { UiService } from '../services/ui.service';
 
 @Component({
     selector: 'app-tournament',
@@ -17,8 +17,7 @@ import { ConfirmModalComponent } from '../components/shared/confirm-modal.compon
         FormsModule,
         LoaderComponent,
         TranslateModule,
-        TournamentCreateModalComponent,
-        ConfirmModalComponent
+        TournamentCreateModalComponent
     ],
     templateUrl: './tournament.component.html',
 })
@@ -26,15 +25,13 @@ export class TournamentComponent implements OnInit {
     private tournamentService = inject(TournamentService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
+    private ui = inject(UiService);
 
-    currentTab = signal<'all' | 'live' | 'upcoming' | 'past' | 'archived'>('live');
+    currentTab = signal<'all' | 'live' | 'upcoming' | 'archived'>('live');
     isLoading = signal(true);
     showCreateModal = signal(false);
-    toastMessage = signal<{text: string, type: 'success' | 'error' | 'info'} | null>(null);
 
-    // Soft-delete confirmation state
-    tournamentToDelete = signal<TournamentDTO | null>(null);
-    isDeleting = signal(false);
+  // Filtering state
 
     // Filters
     searchQuery = '';
@@ -77,6 +74,11 @@ export class TournamentComponent implements OnInit {
                 this.searchQuery = search;
                 this.onFilterChange();
             }
+            
+            const tab = params['tab'];
+            if (tab && ['all', 'live', 'upcoming', 'archived'].includes(tab)) {
+                this.currentTab.set(tab as any);
+            }
         });
     }
 
@@ -89,7 +91,7 @@ export class TournamentComponent implements OnInit {
             },
             error: (err) => {
                 this.isLoading.set(false);
-                this.showToast('Failed to load tournaments', 'error');
+                this.ui.showToast('Failed to load tournaments', 'error');
             }
         });
     }
@@ -108,33 +110,26 @@ export class TournamentComponent implements OnInit {
 
     // --- Soft delete ---
 
-    requestDelete(tournament: TournamentDTO) {
-        this.tournamentToDelete.set(tournament);
-    }
-
-    cancelDelete() {
-        this.tournamentToDelete.set(null);
-    }
-
-    confirmDelete() {
-        const target = this.tournamentToDelete();
-        if (!target?.id || this.isDeleting()) return;
-
-        this.isDeleting.set(true);
-        this.tournamentService.delete(target.id.toString()).subscribe({
-            next: () => {
-                // Drop it from the local list so it disappears without a full reload
-                this.allTournaments = this.allTournaments.filter(t => t.id !== target.id);
-                this.isDeleting.set(false);
-                this.tournamentToDelete.set(null);
-                this.showToast('Tournament deleted', 'success');
-            },
-            error: () => {
-                this.isDeleting.set(false);
-                this.tournamentToDelete.set(null);
-                this.showToast('Failed to delete tournament', 'error');
-            }
-        });
+    async requestDelete(tournament: TournamentDTO) {
+        if (!tournament?.id) return;
+        
+        const translate = inject(TranslateService);
+        const title = translate.instant('TOURNAMENTS.DELETE_CONFIRM_TITLE');
+        const message = translate.instant('TOURNAMENTS.DELETE_CONFIRM_MESSAGE') + ' ' + (tournament.name || '');
+        
+        const confirmed = await this.ui.confirmAction(title, message);
+        
+        if (confirmed) {
+            this.tournamentService.delete(tournament.id.toString()).subscribe({
+                next: () => {
+                    this.allTournaments = this.allTournaments.filter(t => t.id !== tournament.id);
+                    this.ui.showToast('Tournament deleted', 'success');
+                },
+                error: () => {
+                    this.ui.showToast('Failed to delete tournament', 'error');
+                }
+            });
+        }
     }
 
     getStatusLabel(status: string): string {
@@ -169,6 +164,10 @@ export class TournamentComponent implements OnInit {
 
     get activeTournaments() {
         const query = this.searchQuery.trim().toLowerCase();
+        
+        const now = new Date();
+        const todayString = now.toDateString();
+        now.setHours(0, 0, 0, 0);
 
         let list: TournamentDTO[];
         switch (this.currentTab()) {
@@ -176,15 +175,40 @@ export class TournamentComponent implements OnInit {
                 list = [...this.allTournaments];
                 break;
             case 'upcoming':
-                list = this.allTournaments.filter(t => t.status === 'draft' || t.status === 'registration_open');
+                list = this.allTournaments.filter(t => {
+                    if (t.startDate) {
+                        const startDate = new Date(t.startDate);
+                        startDate.setHours(0, 0, 0, 0);
+                        if (startDate < now) return false; // Reject past dates
+                    }
+                    if (t.status === 'draft' || t.status === 'registration_open') return true;
+                    if (t.startDate) {
+                        const startDate = new Date(t.startDate);
+                        startDate.setHours(0, 0, 0, 0);
+                        if (startDate > now) return true;
+                    }
+                    return false;
+                });
                 break;
-            case 'past':
             case 'archived':
-                list = this.allTournaments.filter(t => t.status === 'completed');
+                list = this.allTournaments.filter(t => {
+                    if (t.status === 'completed' || t.status === 'archived') return true;
+                    if (t.startDate) {
+                        const startDate = new Date(t.startDate);
+                        startDate.setHours(0, 0, 0, 0);
+                        if (startDate < now) return true;
+                    }
+                    return false;
+                });
                 break;
             case 'live':
             default:
-                list = this.allTournaments.filter(t => t.status === 'in_progress');
+                list = this.allTournaments.filter(t => {
+                    // Only show tournaments where the schedule date is exactly today
+                    if (!t.startDate) return false;
+                    const startDate = new Date(t.startDate);
+                    return startDate.toDateString() === todayString;
+                });
                 break;
         }
 
@@ -247,7 +271,7 @@ export class TournamentComponent implements OnInit {
         this.sortBy = 'name';
     }
 
-    switchTab(tab: 'all' | 'live' | 'upcoming' | 'past' | 'archived') {
+    switchTab(tab: 'all' | 'live' | 'upcoming' | 'archived') {
         this.currentTab.set(tab);
     }
 
@@ -268,12 +292,7 @@ export class TournamentComponent implements OnInit {
     }
 
     onTournamentCreated(created: any) {
-        this.showToast('Tournament created successfully!', 'success');
+        this.ui.showToast('Tournament created successfully!', 'success');
         this.loadTournaments();
-    }
-
-    showToast(text: string, type: 'success' | 'error' | 'info' = 'success') {
-        this.toastMessage.set({ text, type });
-        setTimeout(() => this.toastMessage.set(null), 3000);
     }
 }

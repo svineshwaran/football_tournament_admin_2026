@@ -4,14 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { SponsorService, Sponsor, TournamentSponsor } from '../../../settings/services/sponsor.service';
 import { UiService } from '../../../services/ui.service';
 import { environment } from '../../../../environments/environment';
-import { ConfirmModalComponent } from '../../../components/shared/confirm-modal.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SponsorModalComponent } from '../../../settings/components/sponsors/sponsor-modal.component';
 
 @Component({
   selector: 'app-tournament-sponsors',
   standalone: true,
-  imports: [CommonModule, FormsModule, ConfirmModalComponent, TranslateModule, SponsorModalComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, SponsorModalComponent],
   templateUrl: './tournament-sponsors.component.html'
 })
 export class TournamentSponsorsComponent implements OnInit, OnChanges {
@@ -27,9 +26,7 @@ export class TournamentSponsorsComponent implements OnInit, OnChanges {
   isCreateModalOpen = signal(false);
   selectedSponsorId = signal<number | null>(null);
   
-  // Delete confirmation
-  showRemoveConfirm = false;
-  mappingToRemove: TournamentSponsor | null = null;
+  // Modals
 
   apiUrl = environment.apiUrl.replace('/api', '');
 
@@ -121,27 +118,28 @@ export class TournamentSponsorsComponent implements OnInit, OnChanges {
     });
   }
 
-  openRemoveConfirm(mapping: TournamentSponsor) {
-    this.mappingToRemove = mapping;
-    this.showRemoveConfirm = true;
-  }
+  async removeMapping(mapping: TournamentSponsor) {
+    if (!mapping) return;
 
-  removeMapping() {
-    if (!this.mappingToRemove) return;
+    const translate = inject(TranslateService);
+    const title = translate.instant('TOURNAMENT_DASHBOARD.SPONSORS.CONFIRM_REMOVE_TITLE');
+    const message = translate.instant('TOURNAMENT_DASHBOARD.SPONSORS.CONFIRM_REMOVE_MSG');
 
-    this.ui.startAction();
-    this.sponsorService.removeSponsorMapping(this.mappingToRemove.id).subscribe({
-      next: () => {
-        this.loadData();
-        this.showRemoveConfirm = false;
-        this.mappingToRemove = null;
-        this.ui.endAction();
-        this.ui.showToast('Sponsor removed from tournament', 'success');
-      },
-      error: (err) => {
-        this.ui.endAction();
-        this.ui.showToast('Failed to remove sponsor', 'error');
-      }
-    });
+    const confirmed = await this.ui.confirmAction(title, message);
+
+    if (confirmed) {
+      this.ui.startAction();
+      this.sponsorService.removeSponsorMapping(mapping.id).subscribe({
+        next: () => {
+          this.loadData();
+          this.ui.endAction();
+          this.ui.showToast('Sponsor removed from tournament', 'success');
+        },
+        error: (err) => {
+          this.ui.endAction();
+          this.ui.showToast('Failed to remove sponsor', 'error');
+        }
+      });
+    }
   }
 }

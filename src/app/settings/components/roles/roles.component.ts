@@ -33,7 +33,6 @@ import { UiService } from '../../../services/ui.service';
             {{ isLoading ? 'Adding...' : 'Add Role' }}
           </button>
         </div>
-        <p *ngIf="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
       </div>
 
       <!-- Roles List -->
@@ -52,6 +51,7 @@ import { UiService } from '../../../services/ui.service';
               <tr class="text-zinc-400 text-sm border-b border-black-border">
                 <th class="px-6 py-4 font-medium uppercase tracking-wider">ID</th>
                 <th class="px-6 py-4 font-medium uppercase tracking-wider">Role Name</th>
+                <th class="px-6 py-4 font-medium uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-black-border">
@@ -62,15 +62,23 @@ import { UiService } from '../../../services/ui.service';
                     {{ role.name }}
                   </span>
                 </td>
+                <td class="px-6 py-4 text-right">
+                  <button *ngIf="role.id !== 1" (click)="deleteRole(role.id)" class="p-2 text-red-500 hover:bg-red-500/20 rounded-md transition-all active:scale-90" title="Delete Role">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </td>
               </tr>
               <tr *ngIf="roles().length === 0">
-                <td colspan="2" class="px-6 py-8 text-center text-zinc-500 italic">No roles found. Create one above.</td>
+                <td colspan="3" class="px-6 py-8 text-center text-zinc-500 italic">No roles found. Create one above.</td>
               </tr>
             </tbody>
           </table>
           }
         </div>
       </div>
+
     </div>
   `
 })
@@ -79,7 +87,8 @@ export class RolesComponent implements OnInit {
   newRoleName = '';
   isLoading = false;
   isFetchingData = signal(true);
-  errorMessage = '';
+
+  roleToDeleteId: number | null = null;
 
   constructor(
     private settingsService: SettingsService,
@@ -107,7 +116,6 @@ export class RolesComponent implements OnInit {
     if (!this.newRoleName.trim()) return;
 
     this.isLoading = true;
-    this.errorMessage = '';
     this.settingsService.addRole(this.newRoleName.trim()).subscribe({
       next: () => {
         this.newRoleName = '';
@@ -117,8 +125,30 @@ export class RolesComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.error || 'Failed to add role';
+        this.ui.showToast(err.error?.error || 'Failed to add role', 'error');
       }
     });
+  }
+
+  async deleteRole(id: number) {
+    const confirmed = await this.ui.confirmAction(
+      'Delete Role', 
+      'Are you sure you want to delete this role? This action cannot be undone and will remove all related permissions.'
+    );
+    
+    if (confirmed) {
+      this.isLoading = true;
+      this.settingsService.deleteRole(id).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.ui.showToast('Role deleted successfully', 'success');
+          this.loadRoles();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.ui.showToast(err.error?.error || 'Failed to delete role', 'error');
+        }
+      });
+    }
   }
 }

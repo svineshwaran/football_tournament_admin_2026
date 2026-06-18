@@ -6,13 +6,12 @@ import { Sponsor, SponsorService } from '../../services/sponsor.service';
 import { SponsorModalComponent } from './sponsor-modal.component';
 import { environment } from '../../../../environments/environment';
 import { UiService } from '../../../services/ui.service';
-import { ConfirmModalComponent } from '../../../components/shared/confirm-modal.component';
 import { LoaderComponent } from '../../../components/loader/loader.component';
 
 @Component({
   selector: 'app-sponsors',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, SponsorModalComponent, ConfirmModalComponent, LoaderComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, SponsorModalComponent, LoaderComponent],
   template: `
     <div class="space-y-6">
       <!-- Header -->
@@ -112,7 +111,7 @@ import { LoaderComponent } from '../../../components/loader/loader.component';
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
-                    <button (click)="openDeleteConfirm(sponsor)" class="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all" title="Delete">
+                    <button (click)="deleteSponsor(sponsor)" class="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all" title="Delete">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
@@ -143,14 +142,6 @@ import { LoaderComponent } from '../../../components/loader/loader.component';
                        (close)="closeModal()" 
                        (saved)="onSaved()">
     </app-sponsor-modal>
-
-    <app-confirm-modal *ngIf="showDeleteConfirm"
-                       [show]="showDeleteConfirm"
-                       [title]="'SETTINGS.SPONSORS.DELETE_TITLE' | translate"
-                       [message]="'SETTINGS.SPONSORS.DELETE_CONFIRM' | translate"
-                       (onConfirm)="deleteSponsor()"
-                       (onCancel)="showDeleteConfirm = false">
-    </app-confirm-modal>
   `
 })
 export class SponsorsComponent implements OnInit {
@@ -163,9 +154,7 @@ export class SponsorsComponent implements OnInit {
   selectedSponsor: Sponsor | null = null;
   isFetchingData = signal(true);
   
-  // Delete confirmation
-  showDeleteConfirm = false;
-  sponsorToDelete: Sponsor | null = null;
+  // Filters
   filters = {
     search: '',
     status: ''
@@ -198,28 +187,28 @@ export class SponsorsComponent implements OnInit {
     this.selectedSponsor = null;
   }
 
-  openDeleteConfirm(sponsor: Sponsor) {
-    this.sponsorToDelete = sponsor;
-    this.showDeleteConfirm = true;
-  }
-
-  deleteSponsor() {
-    if (!this.sponsorToDelete?.id) return;
+  async deleteSponsor(sponsor: Sponsor) {
+    if (!sponsor?.id) return;
     
-    this.ui.startAction();
-    this.sponsorService.delete(this.sponsorToDelete.id).subscribe({
-      next: () => {
-        this.loadSponsors();
-        this.showDeleteConfirm = false;
-        this.sponsorToDelete = null;
-        this.ui.endAction();
-        this.ui.showToast('Sponsor deleted successfully', 'success');
-      },
-      error: (err) => {
-        this.ui.endAction();
-        this.ui.showToast('Failed to delete sponsor', 'error');
-      }
-    });
+    const confirmed = await this.ui.confirmAction(
+      'Delete Sponsor', // You can use translate service here if injected, but keeping simple for now
+      'Are you sure you want to delete this sponsor?'
+    );
+    
+    if (confirmed) {
+      this.ui.startAction();
+      this.sponsorService.delete(sponsor.id).subscribe({
+        next: () => {
+          this.loadSponsors();
+          this.ui.endAction();
+          this.ui.showToast('Sponsor deleted successfully', 'success');
+        },
+        error: (err) => {
+          this.ui.endAction();
+          this.ui.showToast('Failed to delete sponsor', 'error');
+        }
+      });
+    }
   }
 
   onSaved() {
